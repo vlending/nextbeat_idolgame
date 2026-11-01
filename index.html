@@ -1,0 +1,576 @@
+<title>넥스트비트 데뷔 프로젝트</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gothic+A1:wght@400;600;800&display=swap">
+<style>
+/* Layout: 한 손 세로 화면. 상단 '무대 조명' 네이비 밴드 + 2×2 멤버 카드 + 하단 고정 액션 바. 게임 화면이므로 단일 라이트 테마로 고정. */
+:root{
+  --bg:#EEF0FA; --card:#FFFFFF; --ink:#1F2140; --sub:#686C90; --line:#DCDFF1;
+  --accent:#FF4F8B; --accent-ink:#FFFFFF; --stage:#1F2140; --stage-ink:#F4F2FF;
+  --vocal:#7C6CF2; --dance:#FF8A3D; --charm:#FF4F8B; --cond:#25B99A; --gold:#FFB938; --warn:#E5484D;
+  --skin:#FFE3D3; --blush:#FFB3C1;
+  --f-display:"Jua","Gothic A1",system-ui,sans-serif;
+  --f-body:"Gothic A1",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
+#app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+.num{font-variant-numeric:tabular-nums}
+
+/* 상단 무대 밴드 */
+.top{background:var(--stage);color:var(--stage-ink);padding-block:14px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-radius:0 0 22px 22px;position:relative;overflow:hidden}
+.top::after{content:"";position:absolute;inset:-40% 30% auto -10%;height:180%;background:radial-gradient(closest-side,rgba(255,79,139,.28),transparent);pointer-events:none}
+.top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:relative;z-index:1}
+.group{font-family:var(--f-display);font-size:26px;letter-spacing:.02em;line-height:1.1}
+.status{font-size:12px;opacity:.75;margin-top:4px}
+.period{text-align:right;font-family:var(--f-display);font-size:18px}
+.period small{display:block;font-family:var(--f-body);font-size:11px;opacity:.7}
+.wallet{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;position:relative;z-index:1}
+.wallet div{background:rgba(255,255,255,.08);border-radius:12px;padding:8px 10px}
+.wallet span{display:block;font-size:11px;opacity:.7}
+.wallet b{font-size:16px}
+.goal{margin:12px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));font-size:13px;color:var(--sub);display:flex;align-items:center;gap:8px}
+.goal .pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--ink);font-weight:600}
+
+/* 멤버 카드 */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-block:12px 120px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.card{background:var(--card);border-radius:18px;padding:10px 10px 12px;text-align:left;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 0 var(--line),0 6px 18px rgba(31,33,64,.06);min-width:0}
+.card:active{transform:scale(.98)}
+.card .av{background:linear-gradient(var(--tint),transparent);border-radius:12px;aspect-ratio:1/0.82;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;max-width:100%}
+.card .av svg{width:82%;height:auto}
+.name{font-family:var(--f-display);font-size:18px;line-height:1}
+.role{font-size:11px;color:var(--sub)}
+.bars{display:grid;gap:4px}
+.bar{display:grid;grid-template-columns:28px 1fr 22px;align-items:center;gap:4px;font-size:10.5px;color:var(--sub)}
+.bar i{height:6px;border-radius:3px;background:var(--line);position:relative;overflow:hidden}
+.bar i b{position:absolute;inset:0 auto 0 0;border-radius:3px;transition:width .5s}
+.bar em{font-style:normal;text-align:right;color:var(--ink);font-weight:600}
+.chip{font-size:11.5px;font-weight:600;border-radius:8px;padding:5px 8px;background:var(--bg);color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip.set{background:var(--ink);color:var(--stage-ink)}
+
+/* 하단 바 */
+.dock{position:fixed;left:0;right:0;bottom:0;padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:linear-gradient(transparent,var(--bg) 30%);z-index:5}
+.dock-in{max-width:448px;margin:0 auto;display:flex;gap:10px}
+.btn{flex:1;border-radius:16px;padding:15px 12px;font-family:var(--f-display);font-size:17px;background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 0 #C93268}
+.btn:active{transform:translateY(3px);box-shadow:0 3px 0 #C93268}
+.btn.alt{background:var(--card);color:var(--ink);box-shadow:0 6px 0 var(--line)}
+.btn.alt:active{box-shadow:0 3px 0 var(--line)}
+.btn.gold{background:var(--gold);color:var(--ink);box-shadow:0 6px 0 #D18E12}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn small{display:block;font-family:var(--f-body);font-size:11px;opacity:.8;margin-top:2px}
+
+/* 시트 */
+.scrim{position:fixed;inset:0;background:rgba(20,21,45,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{background:var(--card);width:100%;max-width:480px;max-height:92%;overflow:auto;border-radius:24px 24px 0 0;padding-top:18px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));animation:up .25s ease-out}
+.sheet h2{font-family:var(--f-display);font-weight:400;font-size:24px;margin:0 0 4px;text-wrap:balance}
+.sheet h3{font-size:12px;letter-spacing:.06em;color:var(--sub);margin:18px 0 8px;font-weight:800}
+.sheet p{line-height:1.6;margin:0}
+.x{float:right;font-size:22px;line-height:1;padding:4px 8px;color:var(--sub)}
+@keyframes up{from{transform:translateY(40px);opacity:.4}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.profile{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center}
+.profile .av{border-radius:16px;background:linear-gradient(var(--tint),var(--bg));display:flex;justify-content:center;align-items:flex-end;aspect-ratio:1;overflow:hidden}
+.profile .av svg{width:92%}
+.profile .bars{gap:6px}
+.profile .bar{grid-template-columns:34px 1fr 26px;font-size:12px}
+.hearts{color:var(--accent);font-size:13px;letter-spacing:2px}
+.bubble{background:var(--bg);border-radius:4px 16px 16px 16px;padding:12px 14px;margin-top:12px;line-height:1.6;position:relative}
+.bubble .who{font-weight:800;font-size:12px;color:var(--sub);display:block;margin-bottom:2px}
+.talk{margin-top:8px;font-size:13px;font-weight:600;color:var(--accent);padding:6px 0}
+.talk[disabled]{color:var(--sub);pointer-events:none}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{border:2px solid var(--line);border-radius:14px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:3px;min-width:0}
+.opt b{font-size:14px}
+.opt span{font-size:11.5px;color:var(--sub);line-height:1.4}
+.opt.on{border-color:var(--ink);background:var(--bg)}
+.opt.bad{opacity:.45;pointer-events:none}
+.tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;color:#fff;margin-right:4px}
+
+.res{display:grid;gap:8px;margin-top:10px}
+.res-row{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;background:var(--bg);border-radius:14px;padding:8px 10px}
+.res-row svg{width:44px;height:44px}
+.res-row b{font-size:13px}
+.res-row div span{display:block;font-size:12px;color:var(--sub);margin-top:2px}
+.up{color:var(--cond);font-weight:800}.down{color:var(--warn);font-weight:800}
+.event{border:2px dashed var(--line);border-radius:16px;padding:14px;margin-top:14px}
+.event .opts{margin-top:10px}
+.concepts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.concept{border-radius:16px;padding:14px 12px;text-align:left;color:#fff;min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+.concept b{font-family:var(--f-display);font-weight:400;font-size:19px}
+.concept span{font-size:11.5px;opacity:.9;line-height:1.4}
+.rank{font-family:var(--f-display);font-size:72px;line-height:1;text-align:center;margin:12px 0 0}
+.rank small{font-size:22px}
+.center{text-align:center}
+.row-btns{display:flex;gap:10px;margin-top:18px}
+
+/* 타이틀 */
+.title{min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:22px;padding-block:32px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));background:var(--stage);color:var(--stage-ink);position:relative;overflow:hidden}
+.title::before{content:"";position:absolute;left:50%;top:-30%;width:140%;height:120%;transform:translateX(-50%);background:conic-gradient(from 160deg at 50% 0%,transparent 0 10deg,rgba(255,255,255,.07) 10deg 22deg,transparent 22deg 34deg,rgba(255,79,139,.12) 34deg 44deg,transparent 44deg);pointer-events:none}
+.title h1{font-family:var(--f-display);font-weight:400;font-size:44px;line-height:1.05;margin:0;position:relative}
+.title h1 em{font-style:normal;color:var(--accent)}
+.title p{opacity:.8;line-height:1.6;margin:0;position:relative}
+.lineup{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;position:relative}
+.lineup div{text-align:center;font-size:12px}
+.lineup svg{width:100%;height:auto}
+.title .btns{display:grid;gap:12px;position:relative}
+.title input{width:100%;border-radius:14px;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:var(--stage-ink);padding:12px 14px;font:inherit;font-size:16px}
+.title label{font-size:12px;opacity:.7;display:block;margin-bottom:6px}
+.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--stage-ink);padding:10px 16px;border-radius:12px;z-index:40;font-size:13px;animation:up .2s;max-width:calc(100% - 32px)}
+</style>
+
+<div id="app"></div>
+
+<script>
+(() => {
+'use strict';
+const SAVE_KEY = 'nextbeat-idol-save-v1';
+const LAST_MONTH = 24;
+const LIVING_COST = 30; // 만원 / 월
+
+/* ───── 멤버 4명 ───── */
+const MEMBERS = [
+  { id:'seoyun', name:'한서윤', age:20, role:'리더 · 메인보컬', trait:'보컬 레슨 효과 1.3배',
+    boost:{vocal:1.3}, base:{vocal:28,dance:14,charm:18},
+    hair:'#3B2A33', style:'long', outfit:'#7C6CF2', tint:'#E4E0FF', eye:'#3B2A33', acc:'pin',
+    lines:{ hi:['오늘 고음 한 번에 올라갔어! 들었어?','멤버들 다 잘 챙길게. 걱정 마.','데뷔하면 첫 무대에서 꼭 라이브로 부를 거야.'],
+            low:['목이 좀 잠겼어… 오늘은 따뜻한 차 마실래.','리더라서 티를 못 내겠어. 조금 지쳤나 봐.'] } },
+  { id:'harin', name:'강하린', age:19, role:'메인댄서', trait:'댄스 레슨 효과 1.3배',
+    boost:{dance:1.3}, base:{vocal:14,dance:28,charm:17},
+    hair:'#E08AA6', style:'bob', outfit:'#FF8A3D', tint:'#FFE6D6', eye:'#4A2B36', acc:'none',
+    lines:{ hi:['안무 하나 더 짜봤어. 킬링 파트 보여줄까?','거울 앞에 서면 시간 가는 줄 몰라!','연습실 불 끄는 건 항상 내 담당이야.'],
+            low:['발목이 좀 시큰해… 오늘은 스트레칭만 할래.','다리가 내 말을 안 들어. 하루만 쉬자.'] } },
+  { id:'chaea', name:'윤채아', age:18, role:'비주얼 · 센터', trait:'연기·화보 수업 효과 1.3배',
+    boost:{charm:1.3}, base:{vocal:17,dance:15,charm:28},
+    hair:'#D9A55B', style:'wavy', outfit:'#FF4F8B', tint:'#FFE0EC', eye:'#5A3A20', acc:'ribbon',
+    lines:{ hi:['카메라 앞에서 덜 떨게 됐어. 칭찬해줘!','팬분들한테 손편지 쓰는 중이야.','오늘 표정 연기 연습 100번 했어.'],
+            low:['요즘 잠을 못 자서 얼굴이 부었어…','사진 찍기 싫은 날도 있잖아. 오늘이 그래.'] } },
+  { id:'jiwoo', name:'오지우', age:16, role:'래퍼 · 막내', trait:'모든 수업 효과 1.1배 (빠른 성장)',
+    boost:{vocal:1.1,dance:1.1,charm:1.1}, base:{vocal:19,dance:19,charm:19},
+    hair:'#2C3566', style:'buns', outfit:'#25B99A', tint:'#D8F5EE', eye:'#1F2140', acc:'star',
+    lines:{ hi:['언니들 저 랩 가사 새로 썼어요! 들어보실래요?','막내라고 봐주지 마세요. 저도 할 수 있어요!','오늘 급식에 떡볶이 나왔어요. 최고!'],
+            low:['학교랑 연습 같이 하니까 너무 졸려요…','오늘은 그냥 누워서 아무것도 안 하고 싶어요.'] } },
+];
+const BY_ID = Object.fromEntries(MEMBERS.map(m => [m.id, m]));
+
+/* ───── 일정 ───── */
+const SCHED = {
+  vocal:{ name:'보컬 레슨', cost:20, cond:-15, stat:'vocal', desc:'보컬 +5~8 · 컨디션 -15 · 20만원' },
+  dance:{ name:'댄스 레슨', cost:20, cond:-18, stat:'dance', desc:'댄스 +5~8 · 컨디션 -18 · 20만원' },
+  charm:{ name:'연기·화보 수업', cost:20, cond:-12, stat:'charm', desc:'매력 +5~8 · 컨디션 -12 · 20만원' },
+  work: { name:'아르바이트', name2:'행사 출연', cost:0, cond:-20, desc:'수입 +35만원 · 컨디션 -20', desc2:'수입 + 팬 증가 · 컨디션 -20' },
+  sns:  { name:'SNS 라이브', cost:0, cond:-8, desc:'팬 증가 (매력 비례) · 컨디션 -8' },
+  rest: { name:'휴식', cost:0, cond:35, desc:'컨디션 +35 · 무료' },
+};
+const STAT_LABEL = { vocal:'보컬', dance:'댄스', charm:'매력', cond:'컨디션' };
+
+/* ───── 컨셉 ───── */
+const CONCEPTS = [
+  { id:'fresh', name:'청량', w:{vocal:.4,dance:.3,charm:.3}, color:'#1FA9C9', desc:'여름 바다 같은 밝은 곡. 보컬 중심' },
+  { id:'crush', name:'걸크러시', w:{vocal:.2,dance:.55,charm:.25}, color:'#1F2140', desc:'강렬한 퍼포먼스. 댄스 중심' },
+  { id:'dream', name:'몽환', w:{vocal:.35,dance:.15,charm:.5}, color:'#7C6CF2', desc:'신비로운 분위기. 매력 중심' },
+  { id:'retro', name:'레트로', w:{vocal:.34,dance:.33,charm:.33}, color:'#FF8A3D', desc:'모두가 고른 능력치가 중요' },
+];
+
+/* ───── 랜덤 이벤트 ───── */
+const EVENTS = [
+  { id:'snack', when:s=>true, title:'팬이 보낸 간식 박스', text:'연습실 앞에 커다란 간식 상자가 도착했어요.',
+    a:{ label:'다 같이 나눠 먹기', run:s=>{ allCond(s,10); return '모두 컨디션 +10'; } },
+    b:{ label:'인증샷 SNS 업로드', run:s=>{ const f=addFans(s,150+Math.round(s.fans*0.03)); return `팬 +${fmt(f)}`; } } },
+  { id:'aircon', when:s=>true, title:'연습실 에어컨 고장', text:'한여름 같은 연습실. 수리 기사님을 부를까요?',
+    a:{ label:'바로 수리 (30만원)', run:s=>{ s.money-=30; return '자금 -30만원'; } },
+    b:{ label:'선풍기로 버티기', run:s=>{ allCond(s,-12); return '모두 컨디션 -12'; } } },
+  { id:'fight', when:s=>true, title:'멤버 간 작은 다툼', text:'안무 동선 문제로 하린과 지우가 언성을 높였어요.',
+    a:{ label:'리더 서윤에게 맡기기', run:s=>{ mem(s,'seoyun').bond=clamp(mem(s,'seoyun').bond+10); mem(s,'seoyun').cond=clamp(mem(s,'seoyun').cond-10); return '서윤 호감도 +10, 컨디션 -10'; } },
+    b:{ label:'다 같이 회식 (20만원)', run:s=>{ s.money-=20; allCond(s,12); s.members.forEach(m=>m.bond=clamp(m.bond+3)); return '자금 -20만원, 모두 컨디션 +12 · 호감도 +3'; } } },
+  { id:'busk', when:s=>true, title:'길거리 버스킹 제안', text:'홍대 앞 버스킹 자리가 하나 비었대요.',
+    a:{ label:'나가서 노래하기', run:s=>{ s.members.forEach(m=>{m.vocal=clamp(m.vocal+2);m.cond=clamp(m.cond-6);}); const f=addFans(s,200+Math.round(s.fans*0.02)); return `모두 보컬 +2, 팬 +${fmt(f)}`; } },
+    b:{ label:'이번엔 쉬기', run:s=>{ allCond(s,5); return '모두 컨디션 +5'; } } },
+  { id:'demo', when:s=>s.songBonus===0, title:'유명 작곡가의 데모곡', text:'다음 무대에 쓸 수 있는 곡을 80만원에 팔겠대요.',
+    a:{ label:'구매 (80만원)', run:s=>{ s.money-=80; s.songBonus=50; return "다음 무대 점수 +50"; } },
+    b:{ label:'아쉽지만 패스', run:s=>'변화 없음' } },
+  { id:'variety', when:s=>s.debuted, title:'예능 프로그램 섭외', text:'주말 예능에서 멤버 한 명을 찾고 있어요.',
+    a:{ label:'채아 출연', run:s=>{ const m=mem(s,'chaea'); m.charm=clamp(m.charm+3); m.cond=clamp(m.cond-10); const f=addFans(s,400+Math.round(s.fans*0.06)); return `채아 매력 +3, 팬 +${fmt(f)}`; } },
+    b:{ label:'지우 출연', run:s=>{ const m=mem(s,'jiwoo'); m.charm=clamp(m.charm+4); m.cond=clamp(m.cond-10); const f=addFans(s,250+Math.round(s.fans*0.05)); return `지우 매력 +4, 팬 +${fmt(f)}`; } } },
+  { id:'rumor', when:s=>s.debuted && s.fans>1000, title:'근거 없는 루머', text:'커뮤니티에 사실이 아닌 글이 퍼지고 있어요.',
+    a:{ label:'공식 대응 (40만원)', run:s=>{ s.money-=40; return '자금 -40만원. 루머가 금방 잠잠해졌어요'; } },
+    b:{ label:'무시하기', run:s=>{ if(Math.random()<0.5){ const lost=Math.round(s.fans*0.08); s.fans-=lost; return `팬 -${fmt(lost)}`; } return '다행히 금방 잊혔어요'; } } },
+  { id:'cf', when:s=>s.debuted && s.fans>5000, title:'광고 촬영 제의', text:'음료 광고 모델 제안이 들어왔어요. 촬영 일정이 빡빡해요.',
+    a:{ label:'수락하기', run:s=>{ s.money+=150; allCond(s,-12); const f=addFans(s,Math.round(s.fans*0.05)); return `자금 +150만원, 팬 +${fmt(f)}, 모두 컨디션 -12`; } },
+    b:{ label:'정중히 거절', run:s=>'변화 없음' } },
+  { id:'cold', when:s=>true, title:'환절기 감기', text:'숙소에 감기가 돌기 시작했어요.',
+    a:{ label:'병원 가기 (15만원)', run:s=>{ s.money-=15; return '자금 -15만원. 다들 무사해요'; } },
+    b:{ label:'푹 자면 낫겠지', run:s=>{ const m=pick(s.members); m.cond=clamp(m.cond-25); return `${BY_ID[m.id].name} 컨디션 -25`; } } },
+];
+
+/* ───── 유틸 ───── */
+const $ = sel => document.querySelector(sel);
+const clamp = (v,lo=0,hi=100) => Math.max(lo,Math.min(hi,Math.round(v)));
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const fmt = n => Math.round(n).toLocaleString('ko-KR');
+const money = n => (n<0?'-':'') + fmt(Math.abs(n)) + '만원';
+const mem = (s,id) => s.members.find(m=>m.id===id);
+const allCond = (s,d) => s.members.forEach(m=>m.cond=clamp(m.cond+d));
+const addFans = (s,n) => { n=Math.max(0,Math.round(n)); s.fans+=n; return n; };
+const avgStat = s => Math.round(s.members.reduce((t,m)=>t+m.vocal+m.dance+m.charm,0)/(s.members.length*3));
+const periodText = mo => `${Math.ceil(mo/12)}년차 ${((mo-1)%12)+1}월`;
+const esc = t => String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ───── 캐릭터 그림 (SVG) ───── */
+function avatar(id, mood){
+  const m = BY_ID[id];
+  const h = m.hair;
+  const back = {
+    long:`<path d="M21 46 Q20 15 50 15 Q80 15 79 46 L82 96 Q66 102 50 100 Q34 102 18 96 Z" fill="${h}"/>`,
+    bob:`<path d="M20 48 Q19 15 50 15 Q81 15 80 48 L81 70 Q66 76 50 74 Q34 76 19 70 Z" fill="${h}"/>`,
+    wavy:`<path d="M21 46 Q20 15 50 15 Q80 15 79 46 Q86 58 79 68 Q86 80 76 90 Q64 96 50 94 Q36 96 24 90 Q14 80 21 68 Q14 58 21 46 Z" fill="${h}"/>`,
+    buns:`<circle cx="25" cy="22" r="11" fill="${h}"/><circle cx="75" cy="22" r="11" fill="${h}"/><path d="M22 48 Q21 17 50 17 Q79 17 78 48 L78 62 Q50 68 22 62 Z" fill="${h}"/>`,
+  }[m.style];
+  const bangs = {
+    long:`<path d="M24 46 Q24 19 50 19 Q76 19 76 46 Q70 33 56 30 Q50 38 38 37 Q30 40 24 46 Z" fill="${h}"/>`,
+    bob:`<path d="M23 44 Q23 18 50 18 Q77 18 77 44 L72 37 L66 41 L60 36 L54 41 L48 36 L42 41 L36 36 L30 41 Z" fill="${h}"/>`,
+    wavy:`<path d="M24 46 Q24 19 50 19 Q76 19 76 46 Q66 30 48 31 Q42 40 24 46 Z" fill="${h}"/>`,
+    buns:`<path d="M24 44 Q24 20 50 20 Q76 20 76 44 Q70 34 62 33 L58 38 L52 32 Q40 34 33 38 Q28 40 24 44 Z" fill="${h}"/>`,
+  }[m.style];
+  const acc = {
+    pin:`<path d="M66 28 l6 -6 M64 24 l8 2" stroke="${m.outfit}" stroke-width="3" stroke-linecap="round"/>`,
+    ribbon:`<path d="M30 22 l-9 -6 l1 12 Z M30 22 l9 -6 l-1 12 Z" fill="#FF4F8B"/><circle cx="30" cy="22" r="2.6" fill="#C93268"/>`,
+    star:`<path d="M71 31 l2 4.5 l5 .5 l-3.8 3.2 l1.2 4.8 l-4.4 -2.6 l-4.4 2.6 l1.2 -4.8 l-3.8 -3.2 l5 -.5 Z" fill="#FFB938"/>`,
+    none:'',
+  }[m.acc];
+  let eyes, mouth, extra='';
+  if (mood==='tired'){
+    eyes = `<path d="M35 51 q5 3 10 0 M55 51 q5 3 10 0" stroke="${m.eye}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    mouth = `<path d="M46 64 q4 -2 8 0" stroke="#B5546A" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    extra = `<path d="M74 40 q3 5 0 8 q-3 -3 0 -8 Z" fill="#8FC9F5"/>`;
+  } else {
+    eyes = `<ellipse cx="40" cy="51" rx="4.6" ry="5.8" fill="${m.eye}"/><ellipse cx="60" cy="51" rx="4.6" ry="5.8" fill="${m.eye}"/>
+            <circle cx="41.6" cy="49" r="1.7" fill="#fff"/><circle cx="61.6" cy="49" r="1.7" fill="#fff"/>`;
+    mouth = mood==='happy'
+      ? `<path d="M44 61 q6 7 12 0 Z" fill="#B5546A"/>`
+      : `<path d="M45 62 q5 4 10 0" stroke="#B5546A" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+  }
+  return `<svg viewBox="0 0 100 110" role="img" aria-label="${m.name}">
+    ${back}
+    <path d="M24 110 Q24 84 50 84 Q76 84 76 110 Z" fill="${m.outfit}"/>
+    <path d="M42 84 L50 94 L58 84" fill="#fff" opacity=".85"/>
+    <rect x="44" y="72" width="12" height="13" rx="4" fill="#FFE3D3"/>
+    <ellipse cx="50" cy="50" rx="25" ry="26" fill="#FFE3D3"/>
+    ${bangs}${acc}${eyes}
+    <ellipse cx="33" cy="60" rx="5" ry="2.8" fill="#FFB3C1" opacity=".8"/>
+    <ellipse cx="67" cy="60" rx="5" ry="2.8" fill="#FFB3C1" opacity=".8"/>
+    ${mouth}${extra}
+  </svg>`;
+}
+const moodOf = m => m.cond < 30 ? 'tired' : (m.cond >= 70 ? 'happy' : 'normal');
+
+/* ───── 상태 ───── */
+let S = null;
+function newGame(groupName){
+  return { v:1, group: groupName || 'NEXT BEAT', month:1, money:500, fans:0, debuted:false,
+    lastStage:null, stages:[], bestRank:null, songBonus:0, lastConcept:null, ended:false, firstWin:false,
+    members: MEMBERS.map(m=>({ id:m.id, ...m.base, cond:80, bond:10, chatted:false, sched:null, line:null })) };
+}
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ const t=localStorage.getItem(SAVE_KEY); return t?JSON.parse(t):null; }catch(e){ return null; } }
+
+/* ───── 무대 조건 ───── */
+function stageInfo(s){
+  if (!s.debuted){
+    const need = 30, now = avgStat(s);
+    if (s.month < 3) return { ok:false, text:`데뷔 쇼케이스는 3월부터 · 평균 능력치 ${now}/${need}` };
+    if (now < need) return { ok:false, text:`데뷔 조건: 평균 능력치 ${now}/${need}` };
+    return { ok:true, text:'데뷔 쇼케이스 준비 완료!' };
+  }
+  const wait = 3 - (s.month - s.lastStage);
+  if (wait > 0) return { ok:false, text:`다음 컴백까지 ${wait}개월` };
+  return { ok:true, text:'컴백 무대를 열 수 있어요!' };
+}
+
+/* ───── 렌더: 타이틀 ───── */
+function renderTitle(){
+  const saved = load();
+  $('#app').innerHTML = `
+  <section class="title">
+    <h1>넥스트비트<br><em>데뷔 프로젝트</em></h1>
+    <p>신생 기획사의 대표가 되어 연습생 4명을 2년 안에 음원차트 1위 걸그룹으로 키워보세요.</p>
+    <div class="lineup">${MEMBERS.map(m=>`<div>${avatar(m.id,'happy')}<div>${m.name}</div></div>`).join('')}</div>
+    <div class="btns">
+      ${saved && !saved.ended ? `<button class="btn" id="cont">이어하기<small>${esc(saved.group)} · ${periodText(saved.month)}</small></button>` : ''}
+      <div><label for="gname">그룹 이름</label><input id="gname" maxlength="14" value="NEXT BEAT" autocomplete="off"></div>
+      <button class="btn ${saved && !saved.ended ? 'alt':''}" id="start">새로 시작</button>
+    </div>
+  </section>`;
+  $('#start').onclick = () => {
+    const doStart = () => { S = newGame($('#gname').value.trim()); save(); renderMain(); intro(); };
+    if (saved && !saved.ended){
+      openSheet(`<h2>새로 시작할까요?</h2><p>이어하던 기록(${esc(saved.group)}, ${periodText(saved.month)})이 지워져요.</p>
+        <div class="row-btns"><button class="btn alt" data-close>취소</button><button class="btn" id="yes">새로 시작</button></div>`);
+      $('#yes').onclick = () => { closeSheet(); doStart(); };
+    } else doStart();
+  };
+  if ($('#cont')) $('#cont').onclick = () => { S = saved; renderMain(); };
+}
+
+function intro(){
+  openSheet(`<h2>대표님, 환영합니다!</h2>
+    <p>매달 멤버 카드를 눌러 <b>일정</b>을 정하고 <b>이번 달 진행</b>을 누르세요.</p>
+    <h3>게임 방법</h3>
+    <p>· 레슨으로 보컬·댄스·매력을 키워요. 컨디션이 30 아래면 레슨 효과가 떨어져요.<br>
+    · 평균 능력치 30이 되면 <b>데뷔 쇼케이스</b>를 열 수 있어요.<br>
+    · 데뷔 후 3개월마다 <b>컴백</b>해서 음원차트 순위를 올리세요.<br>
+    · 멤버와 매달 한 번 대화하면 호감도가 올라 레슨 효과가 커져요.<br>
+    · 목표: <b>${LAST_MONTH}개월 안에 1위!</b></p>
+    <div class="row-btns"><button class="btn" data-close>시작하기</button></div>`);
+}
+
+/* ───── 렌더: 메인 ───── */
+function renderMain(){
+  const s = S, st = stageInfo(s);
+  $('#app').innerHTML = `
+  <header class="top">
+    <div class="top-row">
+      <div><div class="group">${esc(s.group)}</div><div class="status">${s.debuted ? `데뷔 ${s.stages.length-1 ? (s.stages.length-1)+'번째 컴백 완료' : '완료'} · 최고 ${s.bestRank}위` : '데뷔 준비 중인 연습생'}</div></div>
+      <div class="period num">${periodText(s.month)}<small>${s.month} / ${LAST_MONTH}개월</small></div>
+    </div>
+    <div class="wallet">
+      <div><span>자금</span><b class="num" style="color:${s.money<0?'#FF8FA3':'inherit'}">${money(s.money)}</b></div>
+      <div><span>팬</span><b class="num">${fmt(s.fans)}명</b></div>
+      <div><span>평균 능력치</span><b class="num">${avgStat(s)}</b></div>
+    </div>
+  </header>
+  <div class="goal"><span class="pill">${st.text}</span></div>
+  <main class="grid">
+    ${s.members.map(m=>{ const d=BY_ID[m.id]; const sc=m.sched?SCHED[m.sched]:null; return `
+    <button class="card" data-m="${m.id}" style="--tint:${d.tint}">
+      <div class="av">${avatar(m.id, moodOf(m))}</div>
+      <div><div class="name">${d.name}</div><div class="role">${d.role}</div></div>
+      <div class="bars">${bar('vocal',m.vocal)}${bar('dance',m.dance)}${bar('charm',m.charm)}${bar('cond',m.cond,'컨디')}</div>
+      <div class="chip ${sc?'set':''}">${sc ? schedName(m.sched) : '일정 정하기 ›'}</div>
+    </button>`; }).join('')}
+  </main>
+  <div class="dock"><div class="dock-in">
+    <button class="btn gold" id="stage" ${st.ok?'':'disabled'}>${s.debuted?'컴백 무대':'데뷔 쇼케이스'}</button>
+    <button class="btn" id="next">이번 달 진행<small>운영비 ${LIVING_COST}만원</small></button>
+  </div></div>`;
+  document.querySelectorAll('.card').forEach(el=>el.onclick=()=>openMember(el.dataset.m));
+  $('#next').onclick = runMonth;
+  $('#stage').onclick = openStage;
+}
+function bar(k,v,label){
+  return `<div class="bar"><span>${label||STAT_LABEL[k]}</span><i><b style="width:${v}%;background:var(--${k})"></b></i><em class="num">${v}</em></div>`;
+}
+const schedName = k => (k==='work' && S.debuted) ? SCHED.work.name2 : SCHED[k].name;
+const schedDesc = k => (k==='work' && S.debuted) ? SCHED.work.desc2 : SCHED[k].desc;
+
+/* ───── 멤버 시트 ───── */
+function openMember(id){
+  const m = mem(S,id), d = BY_ID[id];
+  const hearts = '♥'.repeat(Math.round(m.bond/20)) + '♡'.repeat(5-Math.round(m.bond/20));
+  const line = m.line || `대표님, 이번 달 일정은 어떻게 할까요?`;
+  openSheet(`
+    <button class="x" data-close aria-label="닫기">×</button>
+    <div class="profile" style="--tint:${d.tint}">
+      <div class="av">${avatar(id, moodOf(m))}</div>
+      <div>
+        <h2>${d.name} <span style="font-size:14px;color:var(--sub)">${d.age}세</span></h2>
+        <div class="role" style="margin-bottom:8px">${d.role} · ${d.trait}</div>
+        <div class="bars">${bar('vocal',m.vocal)}${bar('dance',m.dance)}${bar('charm',m.charm)}${bar('cond',m.cond,'컨디')}</div>
+      </div>
+    </div>
+    <div class="bubble"><span class="who">${d.name} · 호감도 <span class="hearts">${hearts}</span></span>${esc(line)}</div>
+    <button class="talk" id="talk" ${m.chatted?'disabled':''}>${m.chatted?'이번 달 대화 완료':'대화하기 (호감도 +5)'}</button>
+    <h3>이번 달 일정</h3>
+    <div class="opts">${Object.keys(SCHED).map(k=>{
+      const c=SCHED[k]; const poor = c.cost>0 && S.money - plannedCost(id) < c.cost;
+      return `<button class="opt ${m.sched===k?'on':''} ${poor?'bad':''}" data-s="${k}"><b>${schedName(k)}</b><span>${poor?'자금이 부족해요':schedDesc(k)}</span></button>`; }).join('')}
+    </div>`);
+  $('#talk').onclick = () => {
+    if (m.chatted) return;
+    m.chatted = true; m.bond = clamp(m.bond+5);
+    m.line = m.cond < 30 ? pick(d.lines.low) : pick(d.lines.hi);
+    save(); renderMain(); openMember(id);
+  };
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ m.sched=b.dataset.s; save(); closeSheet(); renderMain(); });
+}
+function plannedCost(exceptId){ return S.members.reduce((t,m)=> t + (m.id!==exceptId && m.sched ? SCHED[m.sched].cost : 0), 0); }
+
+/* ───── 한 달 진행 ───── */
+function runMonth(){
+  const s = S;
+  const cost = s.members.reduce((t,m)=>t+(m.sched?SCHED[m.sched].cost:0),0);
+  if (cost > s.money){ toast('레슨비가 부족해요. 아르바이트나 휴식으로 바꿔주세요.'); return; }
+  const rows = [];
+  s.money -= cost;
+  for (const m of s.members){
+    const d = BY_ID[m.id], k = m.sched || 'rest', sc = SCHED[k];
+    const parts = [];
+    if (sc.stat){
+      const tired = m.cond < 30;
+      let g = rnd(5,8) * (d.boost[sc.stat]||1) * (1 + m.bond/200);
+      if (tired) g *= 0.4;
+      const before = m[sc.stat]; m[sc.stat] = clamp(m[sc.stat]+g); const gain = m[sc.stat]-before;
+      parts.push(`${STAT_LABEL[sc.stat]} <span class="up">+${gain}</span>`);
+      if (!tired && Math.random()<0.35){
+        const other = pick(['vocal','dance','charm'].filter(x=>x!==sc.stat));
+        if (m[other]<100){ m[other]=clamp(m[other]+1); parts.push(`${STAT_LABEL[other]} <span class="up">+1</span>`); }
+      }
+      if (tired) parts.push('<span class="down">컨디션 난조로 효과 감소</span>');
+    } else if (k==='work'){
+      if (s.debuted){
+        const inc = 40 + Math.min(160, Math.round(s.fans/400)); s.money += inc;
+        const f = addFans(s, 30 + m.charm*2); parts.push(`수입 <span class="up">+${inc}만원</span> · 팬 <span class="up">+${fmt(f)}</span>`);
+      } else { s.money += 35; parts.push('수입 <span class="up">+35만원</span>'); }
+    } else if (k==='sns'){
+      const f = addFans(s, (20 + m.charm*3 + m.bond) * (s.debuted ? 4 : 1) + s.fans*0.01);
+      parts.push(`팬 <span class="up">+${fmt(f)}</span>`);
+    }
+    const bc = m.cond; m.cond = clamp(m.cond + sc.cond); const dc = m.cond-bc;
+    parts.push(`컨디션 <span class="${dc>=0?'up':'down'}">${dc>=0?'+':''}${dc}</span>`);
+    rows.push({ id:m.id, title:`${d.name} · ${schedName(k)}`, text:parts.join(' · ') });
+  }
+  s.money -= LIVING_COST;
+  // 데뷔 후에는 팬들이 조금씩 자연 증가 + 음원 수익
+  let passive = '';
+  if (s.debuted){
+    const f = addFans(s, s.fans*0.02); const inc = Math.round(s.fans/1000)*3; s.money += inc;
+    passive = `음원·굿즈 수익 +${inc}만원 · 자연 유입 팬 +${fmt(f)}`;
+  }
+  const evPool = EVENTS.filter(e=>e.when(s));
+  const ev = Math.random()<0.6 ? pick(evPool) : null;
+  s.members.forEach(m=>{ m.chatted=false; m.line=null; });
+  save();
+  showResult(rows, passive, ev);
+}
+
+function showResult(rows, passive, ev){
+  openSheet(`
+    <h2>${periodText(S.month)} 결과</h2>
+    <p style="color:var(--sub);font-size:13px">숙소·운영비 -${LIVING_COST}만원${passive?' · '+passive:''}</p>
+    <div class="res">${rows.map(r=>`<div class="res-row">${avatar(r.id, moodOf(mem(S,r.id)))}<div><b>${r.title}</b><span>${r.text}</span></div></div>`).join('')}</div>
+    ${ev ? `<div class="event" id="ev"><h3 style="margin-top:0">이번 달 사건</h3><b>${ev.title}</b><p style="font-size:13px;color:var(--sub)">${ev.text}</p>
+      <div class="opts"><button class="opt" data-c="a"><b>${ev.a.label}</b></button><button class="opt" data-c="b"><b>${ev.b.label}</b></button></div></div>` : ''}
+    <div class="row-btns"><button class="btn" id="go" ${ev?'disabled':''}>다음 달로</button></div>`, true);
+  if (ev) document.querySelectorAll('#ev .opt').forEach(b=>b.onclick=()=>{
+    const msg = ev[b.dataset.c].run(S); save();
+    $('#ev').innerHTML = `<h3 style="margin-top:0">이번 달 사건</h3><b>${ev.title}</b><p style="margin-top:6px">${ev[b.dataset.c].label} → <b>${msg}</b></p>`;
+    $('#go').disabled = false;
+  });
+  $('#go').onclick = () => {
+    closeSheet();
+    if (S.month >= LAST_MONTH){ S.ended = true; save(); showEnding(); return; }
+    S.month++; save(); renderMain();
+    if (S.money < 0) toast('자금이 마이너스예요! 아르바이트·행사로 수입을 늘려주세요.');
+  };
+}
+
+/* ───── 무대 (데뷔 / 컴백) ───── */
+function openStage(){
+  const s = S;
+  openSheet(`<button class="x" data-close aria-label="닫기">×</button>
+    <h2>${s.debuted ? `${s.stages.length}번째 컴백` : '데뷔 쇼케이스'}</h2>
+    <p style="color:var(--sub);font-size:13px">컨셉을 고르세요. 멤버 능력치와 잘 맞을수록 점수가 높아요.${s.lastConcept?` 지난번(${CONCEPTS.find(c=>c.id===s.lastConcept).name})과 같은 컨셉은 신선도가 떨어져요.`:''}</p>
+    <h3>컨셉</h3>
+    <div class="concepts">${CONCEPTS.map(c=>`<button class="concept" data-c="${c.id}" style="background:${c.color}"><b>${c.name}</b><span>${c.desc}<br>예상 적합도 ${fitPct(c)}%</span></button>`).join('')}</div>`);
+  document.querySelectorAll('.concept').forEach(b=>b.onclick=()=>perform(b.dataset.c));
+}
+function fitPct(c){
+  const best = S.members.reduce((t,m)=>t+Math.max(m.vocal,m.dance,m.charm),0);
+  const val = S.members.reduce((t,m)=>t+m.vocal*c.w.vocal+m.dance*c.w.dance+m.charm*c.w.charm,0);
+  return Math.round(val/best*100);
+}
+function perform(cid){
+  const s = S, c = CONCEPTS.find(x=>x.id===cid);
+  let perf = 0;
+  for (const m of s.members){
+    const v = m.vocal*c.w.vocal + m.dance*c.w.dance + m.charm*c.w.charm;
+    perf += v * 3 * (0.6 + 0.4*m.cond/100);
+  }
+  const buzz = Math.log10(s.fans + 10) * 22;
+  let score = perf + buzz + s.songBonus + rnd(-12,12);
+  if (s.lastConcept === cid) score *= 0.9;
+  score = Math.round(score);
+  let rank = Math.round(100 - (score - 280) * 99 / 360);
+  rank = Math.max(1, Math.min(100, rank));
+  const fansGain = Math.round((101-rank)**2 * 6 + 300);
+  const income = Math.round(100 + (101-rank) * 5);
+  const wasDebut = !s.debuted;
+  s.debuted = true; s.lastStage = s.month; s.lastConcept = cid; s.songBonus = 0;
+  s.stages.push({ month:s.month, concept:cid, rank });
+  s.bestRank = s.bestRank ? Math.min(s.bestRank, rank) : rank;
+  addFans(s, fansGain); s.money += income;
+  allCond(s, -10);
+  const firstWin = rank===1 && !s.firstWin; if (rank===1) s.firstWin = true;
+  save();
+  const lead = s.members.slice().sort((a,b)=>(b.vocal*c.w.vocal+b.dance*c.w.dance+b.charm*c.w.charm)-(a.vocal*c.w.vocal+a.dance*c.w.dance+a.charm*c.w.charm))[0];
+  openSheet(`
+    <h2 class="center">${wasDebut?'데뷔 쇼케이스':'컴백 무대'} · ${c.name}</h2>
+    <p class="center" style="color:var(--sub);font-size:13px">무대 점수 ${score}점 · 오늘의 MVP ${BY_ID[lead.id].name}</p>
+    <div class="rank num" id="rk">100<small>위</small></div>
+    <p class="center" style="color:var(--sub)">음원차트 순위</p>
+    <div class="res">
+      <div class="res-row">${avatar(lead.id,'happy')}<div><b>${BY_ID[lead.id].name}</b><span>"${rank<=10?'우리가 해냈어요! 믿을 수가 없어요!':rank<=50?'다음엔 더 위로 올라갈 수 있어요!':'아직 시작일 뿐이에요. 더 연습할게요!'}"</span></div></div>
+    </div>
+    <p class="center" style="margin-top:12px">팬 <span class="up">+${fmt(fansGain)}</span> · 수익 <span class="up">+${income}만원</span> · 모두 컨디션 -10</p>
+    ${firstWin?'<p class="center" style="margin-top:8px;font-family:var(--f-display);font-size:22px;color:var(--accent)">음원차트 1위 달성!</p>':''}
+    <div class="row-btns"><button class="btn" data-close>확인</button></div>`, true);
+  countRank(rank);
+  renderMain();
+}
+function countRank(target){
+  const el = $('#rk'); let cur = 100;
+  const step = () => { cur = Math.max(target, cur - Math.max(1, Math.round((cur-target)/6))); if (el) el.innerHTML = `${cur}<small>위</small>`; if (cur>target) setTimeout(step, 40); };
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) el.innerHTML = `${target}<small>위</small>`; else step();
+}
+
+/* ───── 엔딩 ───── */
+function showEnding(){
+  const s = S, r = s.bestRank;
+  const [grade, msg] = !r ? ['F','결국 데뷔하지 못했어요. 다음엔 레슨을 더 열심히!']
+    : r===1 ? ['S','음원차트 1위! 대한민국 최고의 걸그룹이 탄생했어요.']
+    : r<=10 ? ['A','TOP 10 진입! 모두가 아는 그룹이 되었어요.']
+    : r<=30 ? ['B','차트 상위권의 실력파 그룹으로 자리 잡았어요.']
+    : r<=60 ? ['C','꾸준히 사랑받는 그룹이 되었어요.'] : ['D','아직 갈 길이 멀지만 팬들은 기다려줄 거예요.'];
+  $('#app').innerHTML = `
+  <section class="title">
+    <p>${esc(s.group)} · ${LAST_MONTH}개월의 기록</p>
+    <h1>등급 <em>${grade}</em></h1>
+    <p>${msg}</p>
+    <div class="lineup">${s.members.map(m=>`<div>${avatar(m.id,'happy')}<div>${BY_ID[m.id].name}</div></div>`).join('')}</div>
+    <div class="wallet" style="margin:0">
+      <div><span>최고 순위</span><b class="num">${r?r+'위':'-'}</b></div>
+      <div><span>팬</span><b class="num">${fmt(s.fans)}</b></div>
+      <div><span>무대</span><b class="num">${s.stages.length}회</b></div>
+    </div>
+    <div class="btns"><button class="btn" id="again">다시 시작</button></div>
+  </section>`;
+  $('#again').onclick = () => { try{ localStorage.removeItem(SAVE_KEY); }catch(e){} renderTitle(); };
+}
+
+/* ───── 시트 / 토스트 ───── */
+function openSheet(html, modal){
+  closeSheet();
+  const scrim = document.createElement('div');
+  scrim.className = 'scrim'; scrim.id = 'scrim';
+  scrim.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`;
+  scrim.addEventListener('click', e => {
+    if (e.target.closest('[data-close]') || (!modal && e.target === scrim)) closeSheet();
+  });
+  document.body.appendChild(scrim);
+}
+function closeSheet(){ const s=$('#scrim'); if (s) s.remove(); }
+function toast(t){ const el=document.createElement('div'); el.className='toast'; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(), 2600); }
+
+/* ───── 시작 ───── */
+function start(){ renderTitle(); }
+window.claude?.hot?.snapshot?.(() => ({}));
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start();
+})();
+</script>
