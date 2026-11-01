@@ -11,9 +11,15 @@
 | 세온 (17) | 메인보컬 | 따뜻하고 안정적인 보컬 | 보컬 레슨 효과 1.3배 |
 | 리에 (16) | 서브보컬 · 막내 | 관찰형 막내 | 모든 수업 효과 1.1배 |
 
-캐릭터 그림은 `assets/` 폴더의 이미지(멤버별 캐릭터 시트에서 잘라낸 6가지 표정)를 사용합니다.
-상황에 따라 표정이 바뀝니다: 평소 `neutral`, 컨디션 좋음 `smile`, 지침 `serious`, 대화 직후·무대 MVP `bigsmile`, 엔딩 `laugh`.
-파일 이름 규칙: `<멤버id>_<표정>.jpg` (멤버id: dorin, garam, seon, rie)
+### 사용한 이미지 (`assets/`)
+| 파일 | 출처 | 쓰는 곳 |
+|---|---|---|
+| `<멤버>_neutral/smile/bigsmile/surprised/serious/upset.jpg` | 멤버별 3D 레퍼런스 시트(FACE TURNAROUND)의 표정 6종 | 멤버 카드, 결과, 사건 화면 |
+| `<멤버>_portrait.jpg` | 멤버별 단독 일러스트 | 멤버 상세 화면 상단 |
+| `key_egoring.jpg` | EGO RING 키 아트 | 시작 화면, 엔딩 |
+| `group_photo.jpg` | 4인 단체 일러스트 | 첫 1위 달성, TOP 10 엔딩 |
+
+표정 규칙: 컨디션 70 이상 `smile` · 50~69 `neutral` · 30~49 `serious` · 30 미만 `upset`, 대화 직후·무대 MVP `bigsmile`, 사건 발생 `surprised`.
 
 ## 진행 방식
 1. 매달 멤버 카드를 눌러 일정(보컬/댄스/연기·화보/아르바이트/SNS 라이브/휴식)을 정합니다.
