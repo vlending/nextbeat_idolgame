@@ -154,6 +154,34 @@ button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
 .sns a:focus-visible{outline:3px solid var(--gold)}
 #stext{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--stage-ink);font:inherit;font-size:12.5px;padding:10px;resize:none}
 .res-row.rec{width:100%;text-align:left}
+.tools{display:flex;gap:8px;margin:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.tool{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 10px;font-weight:800;font-size:13px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.tool em{font-style:normal;font-weight:600;font-size:11px;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opt.inv .price{color:var(--ink);font-weight:800;font-size:12px}
+.chart{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.chart li{display:grid;grid-template-columns:36px 10px 1fr auto;gap:8px;align-items:center;background:var(--bg);border-radius:10px;padding:8px 10px}
+.chart li.ours{background:var(--ink);color:var(--stage-ink)}
+.chart .rk{font-weight:800;text-align:right}.chart i{width:10px;height:10px;border-radius:3px}
+.chart .tg{font-size:11px;font-weight:800;color:var(--accent)}
+.rival{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:10px}
+.rival i{width:10px;height:36px;border-radius:4px}.rival b{font-size:14px}.rival span{display:block;font-size:12px;color:var(--sub)}
+.rival em{font-style:normal;font-size:11px;font-weight:800;color:var(--accent)}.rival.done{opacity:.6}
+.breakdown{display:grid;gap:4px;margin-top:12px;background:var(--bg);border-radius:14px;padding:10px 14px}
+.breakdown div{display:flex;justify-content:space-between;font-size:13px}.breakdown small{color:var(--sub)}
+.beat{margin-top:10px;background:var(--gold);border-radius:12px;padding:10px 14px;font-size:14px}
+.rhythm{position:fixed;inset:0;z-index:30;background:linear-gradient(#14152D,#2A1F4A);color:#fff;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);touch-action:none;user-select:none;-webkit-user-select:none}
+.rh-top{display:flex;justify-content:space-between;align-items:center;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rh-top b{font-family:var(--f-display);font-weight:400;font-size:20px;margin-right:10px}.rh-top span{font-size:13px;opacity:.8}
+.rh-top button{color:#fff;opacity:.7;font-size:13px;padding:6px 10px;border:1px solid rgba(255,255,255,.3);border-radius:999px}
+#rhc{flex:1;width:100%;max-width:520px;margin:0 auto;display:block;min-height:0}
+.rh-lanes{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;max-width:520px;margin:0 auto;padding:8px max(8px,env(safe-area-inset-right,0px)) 12px max(8px,env(safe-area-inset-left,0px))}
+.rh-lanes button{border-radius:14px;background:var(--lc);padding:6px 4px;color:#fff;font-size:12px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:4px;touch-action:none}
+.rh-lanes img{width:100%;max-width:64px;aspect-ratio:1;border-radius:10px;object-fit:cover;display:block}
+.rh-lanes button.hit{animation:hit .15s}
+@keyframes hit{from{transform:scale(.92);filter:brightness(1.4)}}
+.rh-end{position:absolute;inset:0;background:rgba(20,21,45,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center}
+.rh-end strong{font-family:var(--f-display);font-weight:400;font-size:96px;color:var(--gold);line-height:1}
+.rh-end .btn{flex:none;width:min(320px,100%);margin-top:14px}
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--stage-ink);padding:10px 16px;border-radius:12px;z-index:40;font-size:13px;animation:up .2s;max-width:calc(100% - 32px)}
 </style>
 
@@ -218,6 +246,42 @@ const CONCEPTS = [
   { id:'retro', name:'레트로', w:{vocal:.34,dance:.33,charm:.33}, color:'#FF8A3D', desc:'모두가 고른 능력치가 중요' },
 ];
 
+/* ───── 투자 ───── */
+const FACILITIES = [
+  { id:'studio',  name:'녹음 스튜디오',     cost:300, desc:'보컬 레슨 효과 +2 (영구)' },
+  { id:'mirror',  name:'대형 연습실',       cost:300, desc:'댄스 레슨 효과 +2 (영구)' },
+  { id:'stylist', name:'전속 스타일리스트', cost:300, desc:'연기·화보 수업 효과 +2 (영구)' },
+  { id:'lounge',  name:'숙소 리모델링',     cost:250, desc:'휴식할 때 컨디션 +15 추가 (영구)' },
+  { id:'pr',      name:'홍보팀 채용',       cost:400, desc:'SNS·자연 유입 팬 1.5배 (영구)', needDebut:true },
+];
+const FAC_STAT = { vocal:'studio', dance:'mirror', charm:'stylist' };
+const PREP = [
+  { id:'mv',     name:'뮤직비디오 제작',    cost:150, bonus:20, desc:'다음 무대 점수 +20', excl:'mvbig' },
+  { id:'mvbig',  name:'대작 뮤직비디오',    cost:450, bonus:50, desc:'다음 무대 점수 +50', excl:'mv' },
+  { id:'outfit', name:'무대 의상 맞춤 제작', cost:120, bonus:15, desc:'다음 무대 점수 +15' },
+  { id:'song',   name:'히트 작곡가 섭외',   cost:350, bonus:40, desc:'다음 무대 점수 +40' },
+];
+const prepBonus = s => PREP.reduce((t,p)=>t+(s.prep[p.id]?p.bonus:0),0);
+
+/* ───── 라이벌 그룹 ───── */
+const RIVALS = [
+  { id:'mint',   name:'민트시럽',   from:85, to:45, color:'#25B99A', reward:2000,  desc:'같은 해 데뷔한 동기 그룹' },
+  { id:'stella', name:'스텔라코드', from:60, to:18, color:'#7C6CF2', reward:6000,  desc:'퍼포먼스로 떠오르는 2년 차 그룹' },
+  { id:'aurora', name:'오로라나인', from:30, to:6,  color:'#FF8A3D', reward:15000, desc:'음원 강자로 불리는 9인조' },
+  { id:'crown',  name:'크라운',     from:2,  to:1,  color:'#E0A020', reward:30000, desc:'차트 정상을 지키는 최정상 그룹' },
+];
+function rivalRanks(month, ours){
+  const used = new Set(ours ? [ours] : []);
+  return RIVALS.map((r,i)=>{
+    let k = Math.round(r.from + (r.to-r.from)*(month-1)/(LAST_MONTH-1)) + (((month*7 + i*13) % 5) - 2);
+    k = Math.max(1, Math.min(100, k));
+    while (used.has(k)) k++;
+    used.add(k);
+    return { ...r, rank:k };
+  });
+}
+const nextRival = s => RIVALS.find(r => !s.beaten.includes(r.id));
+
 /* ───── 랜덤 이벤트 ───── */
 const EVENTS = [
   { id:'snack', when:s=>true, title:'팬이 보낸 간식 박스', text:'연습실 앞에 커다란 간식 상자가 도착했어요.',
@@ -279,8 +343,10 @@ let S = null;
 function newGame(groupName){
   return { v:1, group: groupName || 'NextBeat', month:1, money:500, fans:0, debuted:false,
     lastStage:null, stages:[], bestRank:null, songBonus:0, lastConcept:null, ended:false, firstWin:false,
+    fac:{}, prep:{}, beaten:[],
     members: MEMBERS.map(m=>({ id:m.id, ...m.base, cond:80, bond:10, chatted:false, sched:null, line:null })) };
 }
+function migrate(s){ s.fac = s.fac || {}; s.prep = s.prep || {}; s.beaten = s.beaten || []; return s; }
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ const t=localStorage.getItem(SAVE_KEY); return t?JSON.parse(t):null; }catch(e){ return null; } }
 
@@ -325,7 +391,7 @@ function renderTitle(){
     } else doStart();
   };
   if ($('#past')) $('#past').onclick = () => openRecords(records);
-  if ($('#cont')) $('#cont').onclick = () => { playMusic(); S = saved; renderMain(); };
+  if ($('#cont')) $('#cont').onclick = () => { playMusic(); S = migrate(saved); renderMain(); };
 }
 
 function intro(){
@@ -336,6 +402,9 @@ function intro(){
     · 평균 능력치 30이 되면 <b>데뷔 쇼케이스</b>를 열 수 있어요.<br>
     · 데뷔 후 3개월마다 <b>컴백</b>해서 음원차트 순위를 올리세요.<br>
     · 멤버와 매달 한 번 대화하면 호감도가 올라 레슨 효과가 커져요.<br>
+    · 무대에서는 <b>리듬게임</b>을 해요. 박자에 맞춰 터치할수록 점수가 올라요.<br>
+    · 남는 돈은 <b>투자</b>하세요. 시설은 영구 효과, 뮤비·의상·곡은 다음 무대 점수를 올려요.<br>
+    · <b>라이벌 그룹</b>을 차례로 넘어서면 팬이 크게 늘어요.<br>
     · 목표: <b>${LAST_MONTH}개월 안에 1위!</b></p>
     <div class="row-btns"><button class="btn" data-close>시작하기</button></div>`);
 }
@@ -356,6 +425,10 @@ function renderMain(){
     </div>
   </header>
   <div class="goal"><span class="pill">${st.text}</span></div>
+  <div class="tools">
+    <button class="tool" id="invest">투자 <em>${Object.keys(s.prep).length?`무대 준비 +${prepBonus(s)}점`:'시설 · 무대 준비'}</em></button>
+    <button class="tool" id="chart">라이벌 차트${nextRival(s)?` <em>목표 ${nextRival(s).name}</em>`:' <em>전원 격파</em>'}</button>
+  </div>
   <main class="grid">
     ${s.members.map(m=>{ const d=BY_ID[m.id]; const sc=m.sched?SCHED[m.sched]:null; return `
     <button class="card" data-m="${m.id}" style="--tint:${d.tint}">
@@ -372,6 +445,8 @@ function renderMain(){
   document.querySelectorAll('.card').forEach(el=>el.onclick=()=>openMember(el.dataset.m));
   $('#next').onclick = runMonth;
   $('#stage').onclick = openStage;
+  $('#invest').onclick = openInvest;
+  $('#chart').onclick = openChart;
 }
 function bar(k,v,label){
   return `<div class="bar"><span>${label||STAT_LABEL[k]}</span><i><b style="width:${v}%;background:var(--${k})"></b></i><em class="num">${v}</em></div>`;
@@ -427,6 +502,7 @@ function runMonth(){
       const tired = m.cond < 30;
       let g = rnd(5,8) * (d.boost[sc.stat]||1) * (1 + m.bond/200);
       if (tired) g *= 0.4;
+      if (s.fac[FAC_STAT[sc.stat]]) g += 2;
       const before = m[sc.stat]; m[sc.stat] = clamp(m[sc.stat]+g); const gain = m[sc.stat]-before;
       parts.push(`${STAT_LABEL[sc.stat]} <span class="up">+${gain}</span>`);
       if (!tired && Math.random()<0.35){
@@ -440,10 +516,10 @@ function runMonth(){
         const f = addFans(s, 30 + m.charm*2); parts.push(`수입 <span class="up">+${inc}만원</span> · 팬 <span class="up">+${fmt(f)}</span>`);
       } else { s.money += 35; parts.push('수입 <span class="up">+35만원</span>'); }
     } else if (k==='sns'){
-      const f = addFans(s, (20 + m.charm*3 + m.bond) * (s.debuted ? 4 : 1) + s.fans*0.01);
+      const f = addFans(s, ((20 + m.charm*3 + m.bond) * (s.debuted ? 4 : 1) + s.fans*0.01) * (s.fac.pr ? 1.5 : 1));
       parts.push(`팬 <span class="up">+${fmt(f)}</span>`);
     }
-    const bc = m.cond; m.cond = clamp(m.cond + sc.cond); const dc = m.cond-bc;
+    const bc = m.cond; m.cond = clamp(m.cond + sc.cond + (k==='rest' && s.fac.lounge ? 15 : 0)); const dc = m.cond-bc;
     parts.push(`컨디션 <span class="${dc>=0?'up':'down'}">${dc>=0?'+':''}${dc}</span>`);
     rows.push({ id:m.id, title:`${d.name} · ${schedName(k)}`, text:parts.join(' · ') });
   }
@@ -451,7 +527,7 @@ function runMonth(){
   // 데뷔 후에는 팬들이 조금씩 자연 증가 + 음원 수익
   let passive = '';
   if (s.debuted){
-    const f = addFans(s, s.fans*0.02); const inc = Math.round(s.fans/1000)*3; s.money += inc;
+    const f = addFans(s, s.fans*0.02*(s.fac.pr ? 1.5 : 1)); const inc = Math.round(s.fans/1000)*3; s.money += inc;
     passive = `음원·굿즈 수익 +${inc}만원 · 자연 유입 팬 +${fmt(f)}`;
   }
   const evPool = EVENTS.filter(e=>e.when(s));
@@ -483,52 +559,192 @@ function showResult(rows, passive, ev){
   };
 }
 
+/* ───── 투자 시트 ───── */
+function openInvest(){
+  const s = S;
+  const facBtn = f => { const own = s.fac[f.id], lock = f.needDebut && !s.debuted, poor = s.money < f.cost;
+    return `<button class="opt inv ${own?'on':''} ${(own||lock||poor)?'bad':''}" data-f="${f.id}"><b>${f.name}</b><span>${own?'보유 중':lock?'데뷔 후 가능':f.desc}</span><span class="price">${own?'':money(f.cost)}</span></button>`; };
+  const prepBtn = p => { const own = s.prep[p.id], ex = p.excl && s.prep[p.excl], poor = s.money < p.cost;
+    return `<button class="opt inv ${own?'on':''} ${(own||ex||poor)?'bad':''}" data-p="${p.id}"><b>${p.name}</b><span>${own?'준비 완료':ex?'다른 뮤비를 이미 준비했어요':p.desc}</span><span class="price">${own?'':money(p.cost)}</span></button>`; };
+  openSheet(`<button class="x" data-close aria-label="닫기">×</button>
+    <h2>투자</h2><p style="color:var(--sub);font-size:13px">보유 자금 <b class="num" style="color:var(--ink)">${money(s.money)}</b></p>
+    <h3>시설 · 계약 (한 번 사면 계속 효과)</h3>
+    <div class="opts">${FACILITIES.map(facBtn).join('')}</div>
+    <h3>다음 무대 준비 (무대 한 번에 사용) · 현재 +${prepBonus(s)}점</h3>
+    <div class="opts">${PREP.map(prepBtn).join('')}</div>`);
+  document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{ const f=FACILITIES.find(x=>x.id===b.dataset.f); s.money-=f.cost; s.fac[f.id]=true; save(); renderMain(); openInvest(); toast(`${f.name} 완료!`); });
+  document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ const p=PREP.find(x=>x.id===b.dataset.p); s.money-=p.cost; s.prep[p.id]=true; save(); renderMain(); openInvest(); toast(`${p.name} 준비 완료!`); });
+}
+function chartRows(list){
+  return `<ol class="chart">${list.map(e=>`<li class="${e.ours?'ours':''}"><span class="rk num">${e.rank}</span><i style="background:${e.color}"></i><b>${esc(e.name)}</b><span class="tg">${e.tag||''}</span></li>`).join('')}</ol>`;
+}
+function openChart(){
+  const s = S, last = s.stages.length ? s.stages[s.stages.length-1].rank : null;
+  const rv = rivalRanks(s.month, last);
+  const list = [...rv.map(r=>({name:r.name, rank:r.rank, color:r.color, tag: s.beaten.includes(r.id)?'격파':''})),
+    ...(last ? [{name:s.group, rank:last, color:'var(--accent)', ours:true, tag:'우리'}] : [])].sort((a,b)=>a.rank-b.rank);
+  const nr = nextRival(s);
+  openSheet(`<button class="x" data-close aria-label="닫기">×</button>
+    <h2>라이벌 차트</h2><p style="color:var(--sub);font-size:13px">${periodText(s.month)} 음원차트 · ${last?`우리 최근 순위 ${last}위`:'아직 데뷔 전이에요'}</p>
+    ${chartRows(list)}
+    <h3>라이벌 목록</h3>
+    <div class="res">${RIVALS.map(r=>`<div class="rival ${s.beaten.includes(r.id)?'done':''}"><i style="background:${r.color}"></i><div><b>${r.name}</b><span>${r.desc} · 넘어서면 팬 +${fmt(r.reward)}</span></div><em>${s.beaten.includes(r.id)?'격파':nr&&nr.id===r.id?'다음 목표':''}</em></div>`).join('')}</div>`);
+}
+
+/* ───── 리듬게임 ───── */
+const BPM = 115, BEAT = 60/BPM, BEAT0 = 0.305; // 배경음악 박자 (분석값)
+const LANE_COLOR = { dorin:'#0E6673', garam:'#D9922E', seon:'#C0606F', rie:'#7B5CFF' };
+function startRhythm(c, onDone){
+  const s = S, level = s.stages.length;              // 컴백할수록 노트가 많아짐
+  const segBeat = pick([16, 48, 96, 144, 192]);
+  const segStart = BEAT0 + segBeat*BEAT, startT = segStart - 4*BEAT;
+  const notes = []; let prev = -1;
+  for (let b=0; b<32; b++){
+    let lane = rnd(0,3); if (lane===prev) lane = (lane+rnd(1,3))%4; prev = lane;
+    notes.push({ t:segStart+b*BEAT, lane });
+    if (b>=8 && b%8===0 && Math.random()<0.5+level*0.08) notes.push({ t:segStart+b*BEAT, lane:(lane+2)%4 });
+    if (b<31 && Math.random() < Math.min(0.45, 0.15+level*0.07)) notes.push({ t:segStart+(b+0.5)*BEAT, lane:(lane+rnd(1,3))%4 });
+  }
+  notes.forEach(n=>n.res=null);
+  const ov = document.createElement('div'); ov.className = 'rhythm';
+  ov.innerHTML = `<div class="rh-top"><div><b>${c.name} 무대</b><span id="rhAcc">정확도 -</span></div><button id="rhSkip">건너뛰기</button></div>
+    <canvas id="rhc" aria-label="리듬게임: 노트가 선에 닿을 때 해당 멤버 칸을 터치하세요"></canvas>
+    <div class="rh-lanes">${s.members.map((m,i)=>`<button data-l="${i}" style="--lc:${LANE_COLOR[m.id]}">${avatar(m.id,'normal')}<span>${BY_ID[m.id].name}</span></button>`).join('')}</div>`;
+  document.body.appendChild(ov);
+  const cv = $('#rhc'), g = cv.getContext('2d');
+  const fit = () => { const r = cv.getBoundingClientRect(), d = devicePixelRatio||1; cv.width = r.width*d; cv.height = r.height*d; g.setTransform(d,0,0,d,0,0); };
+  fit(); addEventListener('resize', fit);
+  const APPROACH = 1.4, PERFECT = 0.075, GOOD = 0.15;
+  let t0 = performance.now(), done = false, combo = 0, maxCombo = 0, flashes = [];
+  const useAudio = musicOn;
+  if (useAudio){ try{ bgm.currentTime = startT; }catch(e){} bgm.play().catch(()=>{}); }
+  const clock = () => (useAudio && !bgm.paused) ? bgm.currentTime : startT + (performance.now()-t0)/1000;
+  ov.__rh = { notes, clock };
+  const judge = (lane) => {
+    const t = clock(); let best = null;
+    for (const n of notes) if (!n.res && n.lane===lane && Math.abs(n.t-t)<=GOOD && (!best || Math.abs(n.t-t)<Math.abs(best.t-t))) best = n;
+    const lb = ov.querySelector(`[data-l="${lane}"]`); lb.classList.remove('hit'); void lb.offsetWidth; lb.classList.add('hit');
+    if (!best) return;
+    best.res = Math.abs(best.t-t) <= PERFECT ? 'perfect' : 'good';
+    combo++; maxCombo = Math.max(maxCombo, combo);
+    flashes.push({ lane, text: best.res==='perfect'?'PERFECT':'GOOD', at:performance.now() });
+  };
+  ov.querySelectorAll('[data-l]').forEach(b=>b.addEventListener('pointerdown', e=>{ e.preventDefault(); judge(+b.dataset.l); }));
+  cv.addEventListener('pointerdown', e=>{ const r=cv.getBoundingClientRect(); judge(Math.min(3, Math.floor((e.clientX-r.left)/(r.width/4)))); });
+  const keys = { d:0, f:1, j:2, k:3 };
+  const onKey = e => { if (keys[e.key]!==undefined) judge(keys[e.key]); };
+  addEventListener('keydown', onKey);
+  const finish = (skipped) => {
+    if (done) return; done = true; removeEventListener('keydown', onKey); removeEventListener('resize', fit);
+    const per = notes.filter(n=>n.res==='perfect').length, good = notes.filter(n=>n.res==='good').length, miss = notes.length-per-good;
+    const acc = skipped ? 0.55 : (per + good*0.6)/notes.length;
+    const lanePer = [0,1,2,3].map(l=>notes.filter(n=>n.lane===l && n.res==='perfect').length);
+    const stats = { per, good, miss, maxCombo, acc, skipped, lanePer, total:notes.length };
+    if (skipped){ ov.remove(); onDone(acc, stats); return; }
+    const grade = acc>=0.9?'S':acc>=0.75?'A':acc>=0.55?'B':acc>=0.35?'C':'D';
+    ov.insertAdjacentHTML('beforeend', `<div class="rh-end"><p>무대 평가</p><strong>${grade}</strong><p class="num">정확도 ${Math.round(acc*100)}% · 최대 콤보 ${maxCombo}</p><p class="num">PERFECT ${per} · GOOD ${good} · MISS ${miss}</p><button class="btn" id="rhOk">결과 발표</button></div>`);
+    $('#rhOk').onclick = () => { ov.remove(); onDone(acc, stats); };
+  };
+  $('#rhSkip').onclick = () => finish(true);
+  const draw = () => {
+    if (done) return;
+    const t = clock(), W = cv.clientWidth, H = cv.clientHeight, hitY = H - 24, lw = W/4;
+    g.clearRect(0,0,W,H);
+    for (let l=0; l<4; l++){ g.fillStyle = l%2 ? 'rgba(255,255,255,.04)' : 'rgba(255,255,255,.07)'; g.fillRect(l*lw,0,lw,H); }
+    // 박자선
+    for (let b=Math.ceil((t-segStart)/BEAT); b<Math.ceil((t+APPROACH-segStart)/BEAT); b++){ const y = hitY - ((segStart+b*BEAT)-t)/APPROACH*hitY; g.fillStyle='rgba(255,255,255,.08)'; g.fillRect(0,y,W,1); }
+    g.fillStyle = '#FF4F8B'; g.fillRect(0,hitY-2,W,4);
+    let combo0 = combo;
+    for (const n of notes){
+      if (!n.res && t - n.t > GOOD){ n.res = 'miss'; combo = 0; flashes.push({ lane:n.lane, text:'MISS', at:performance.now() }); }
+      if (n.res) continue;
+      const dt = n.t - t; if (dt > APPROACH) continue;
+      const y = hitY - dt/APPROACH*hitY, x = n.lane*lw + lw/2;
+      g.fillStyle = LANE_COLOR[s.members[n.lane].id]; roundRect(g, x-lw*0.36, y-11, lw*0.72, 22, 11); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.85)'; roundRect(g, x-lw*0.36+4, y-7, lw*0.72-8, 5, 3); g.fill();
+    }
+    const now = performance.now(); flashes = flashes.filter(f=>now-f.at<500);
+    g.textAlign='center'; g.font='20px "Jua",sans-serif';
+    for (const f of flashes){ g.globalAlpha = 1-(now-f.at)/500; g.fillStyle = f.text==='MISS'?'#FF8FA3':f.text==='PERFECT'?'#FFE07A':'#FFFFFF'; g.fillText(f.text, f.lane*lw+lw/2, hitY-40-(now-f.at)/20); }
+    g.globalAlpha = 1;
+    if (t < segStart){ const left = Math.ceil((segStart-t)/BEAT); g.fillStyle='#fff'; g.font='64px "Jua",sans-serif'; g.fillText(left>3?'준비':String(left), W/2, H*0.42); }
+    if (combo>=3){ g.fillStyle='rgba(255,255,255,.9)'; g.font='28px "Jua",sans-serif'; g.fillText(`${combo} COMBO`, W/2, H*0.3); }
+    const judged = notes.filter(n=>n.res); if (judged.length){ const a=(judged.filter(n=>n.res==='perfect').length + judged.filter(n=>n.res==='good').length*0.6)/judged.length; $('#rhAcc').textContent = `정확도 ${Math.round(a*100)}%`; }
+    if (t > notes[notes.length-1].t + 0.8) return finish(false);
+    requestAnimationFrame(draw);
+  };
+  requestAnimationFrame(draw);
+}
+
 /* ───── 무대 (데뷔 / 컴백) ───── */
 function openStage(){
   const s = S;
   openSheet(`<button class="x" data-close aria-label="닫기">×</button>
     <h2>${s.debuted ? `${s.stages.length}번째 컴백` : '데뷔 쇼케이스'}</h2>
-    <p style="color:var(--sub);font-size:13px">컨셉을 고르세요. 멤버 능력치와 잘 맞을수록 점수가 높아요.${s.lastConcept?` 지난번(${CONCEPTS.find(c=>c.id===s.lastConcept).name})과 같은 컨셉은 신선도가 떨어져요.`:''}</p>
+    <p style="color:var(--sub);font-size:13px">컨셉을 고르면 무대(리듬게임)가 시작돼요. 노트가 분홍 선에 닿을 때 그 멤버 칸을 터치하세요.${Object.keys(s.prep).length?` 준비한 투자로 점수 +${prepBonus(s)}.`:' 투자 메뉴에서 뮤비·의상·곡을 준비하면 점수가 올라요.'}${s.lastConcept?` 지난번(${CONCEPTS.find(c=>c.id===s.lastConcept).name})과 같은 컨셉은 신선도가 떨어져요.`:''}</p>
     <h3>컨셉</h3>
     <div class="concepts">${CONCEPTS.map(c=>`<button class="concept" data-c="${c.id}" style="background:${c.color}"><b>${c.name}</b><span>${c.desc}<br>예상 적합도 ${fitPct(c)}%</span></button>`).join('')}</div>`);
-  document.querySelectorAll('.concept').forEach(b=>b.onclick=()=>perform(b.dataset.c));
+  document.querySelectorAll('.concept').forEach(b=>b.onclick=()=>{ const c=CONCEPTS.find(x=>x.id===b.dataset.c); closeSheet(); startRhythm(c, (acc,st)=>perform(c.id, acc, st)); });
 }
 function fitPct(c){
   const best = S.members.reduce((t,m)=>t+Math.max(m.vocal,m.dance,m.charm),0);
   const val = S.members.reduce((t,m)=>t+m.vocal*c.w.vocal+m.dance*c.w.dance+m.charm*c.w.charm,0);
   return Math.round(val/best*100);
 }
-function perform(cid){
+function perform(cid, acc, rs){
   const s = S, c = CONCEPTS.find(x=>x.id===cid);
   let perf = 0;
   for (const m of s.members){
     const v = m.vocal*c.w.vocal + m.dance*c.w.dance + m.charm*c.w.charm;
     perf += v * 3 * (0.6 + 0.4*m.cond/100);
   }
-  const buzz = Math.log10(s.fans + 10) * 22;
-  let score = perf + buzz + s.songBonus + rnd(-12,12);
-  if (s.lastConcept === cid) score *= 0.9;
+  perf = Math.round(perf);
+  const buzz = Math.round(Math.log10(s.fans + 10) * 22);
+  const rhythm = Math.round((acc - 0.55) * 150);
+  const prep = prepBonus(s) + s.songBonus;
+  const luck = rnd(-8,8);
+  let score = perf + buzz + rhythm + prep + luck;
+  const stale = s.lastConcept === cid;
+  if (stale) score *= 0.9;
   score = Math.round(score);
-  let rank = Math.round(100 - (score - 280) * 99 / 360);
+  let rank = Math.round(100 - (score - 300) * 99 / 400);
   rank = Math.max(1, Math.min(100, rank));
-  const fansGain = Math.round((101-rank)**2 * 6 + 300);
+  let fansGain = Math.round((101-rank)**2 * 6 + 300);
   const income = Math.round(100 + (101-rank) * 5);
   const wasDebut = !s.debuted;
-  s.debuted = true; s.lastStage = s.month; s.lastConcept = cid; s.songBonus = 0;
-  s.stages.push({ month:s.month, concept:cid, rank });
+  s.debuted = true; s.lastStage = s.month; s.lastConcept = cid; s.songBonus = 0; s.prep = {};
+  s.stages.push({ month:s.month, concept:cid, rank, acc:Math.round(acc*100) });
   s.bestRank = s.bestRank ? Math.min(s.bestRank, rank) : rank;
+  // 라이벌
+  const rv = rivalRanks(s.month, rank), newly = [];
+  for (const r of rv) if (!s.beaten.includes(r.id) && rank < r.rank){ s.beaten.push(r.id); newly.push(r); fansGain += r.reward; }
   addFans(s, fansGain); s.money += income;
   allCond(s, -10);
   const firstWin = rank===1 && !s.firstWin; if (rank===1) s.firstWin = true;
   save();
-  const lead = s.members.slice().sort((a,b)=>(b.vocal*c.w.vocal+b.dance*c.w.dance+b.charm*c.w.charm)-(a.vocal*c.w.vocal+a.dance*c.w.dance+a.charm*c.w.charm))[0];
+  // MVP: 리듬게임 PERFECT가 가장 많은 멤버 (건너뛰면 능력치 기준)
+  const fit = m => m.vocal*c.w.vocal+m.dance*c.w.dance+m.charm*c.w.charm;
+  const lead = (!rs.skipped && Math.max(...rs.lanePer) > 0)
+    ? s.members[rs.lanePer.indexOf(Math.max(...rs.lanePer))]
+    : s.members.slice().sort((a,b)=>fit(b)-fit(a))[0];
+  const chart = [...rv.map(r=>({name:r.name, rank:r.rank, color:r.color, tag: newly.includes(r)?'격파!':s.beaten.includes(r.id)?'격파':''})),
+    {name:s.group, rank, color:'var(--accent)', ours:true, tag:'우리'}].sort((a,b)=>a.rank-b.rank);
+  const row = (k,v,note) => `<div><span>${k}${note?` <small>${note}</small>`:''}</span><b class="num ${v<0?'down':''}">${v>=0?'+':''}${v}</b></div>`;
   openSheet(`
     <h2 class="center">${wasDebut?'데뷔 쇼케이스':'컴백 무대'} · ${c.name}</h2>
-    <p class="center" style="color:var(--sub);font-size:13px">무대 점수 ${score}점 · 오늘의 MVP ${BY_ID[lead.id].name}</p>
     <div class="rank num" id="rk">100<small>위</small></div>
-    <p class="center" style="color:var(--sub)">음원차트 순위</p>
-    <div class="res">
-      <div class="res-row">${avatar(lead.id,'big')}<div><b>${BY_ID[lead.id].name}</b><span>"${rank<=10?'우리가 해냈어요! 믿을 수가 없어요!':rank<=50?'다음엔 더 위로 올라갈 수 있어요!':'아직 시작일 뿐이에요. 더 연습할게요!'}"</span></div></div>
+    <p class="center" style="color:var(--sub)">음원차트 순위 · 무대 점수 ${score}점</p>
+    <div class="breakdown">
+      ${row('멤버 능력치', perf)}${row('팬 화제성', buzz)}
+      ${row('무대 퍼포먼스', rhythm, rs.skipped?'건너뜀':`정확도 ${Math.round(acc*100)}%`)}
+      ${prep?row('투자·준비', prep):''}${row('운', luck)}
+      ${stale?`<div><span>같은 컨셉 반복</span><b class="down">-10%</b></div>`:''}
+    </div>
+    ${newly.length?`<div class="beat">${newly.map(r=>`<p><b>라이벌 ${r.name} 격파!</b> 팬 +${fmt(r.reward)}</p>`).join('')}</div>`:''}
+    <h3>이번 주 차트</h3>
+    ${chartRows(chart)}
+    <div class="res" style="margin-top:12px">
+      <div class="res-row">${avatar(lead.id,'big')}<div><b>오늘의 MVP ${BY_ID[lead.id].name}</b><span>"${rank<=10?'우리가 해냈어요! 믿을 수가 없어요!':rank<=50?'다음엔 더 위로 올라갈 수 있어요!':'아직 시작일 뿐이에요. 더 연습할게요!'}"</span></div></div>
     </div>
     <p class="center" style="margin-top:12px">팬 <span class="up">+${fmt(fansGain)}</span> · 수익 <span class="up">+${income}만원</span> · 모두 컨디션 -10</p>
     ${firstWin?'<img class="photo" src="assets/group_photo.jpg" alt="멤버 4명 단체 사진"><p class="center" style="margin-top:8px;font-family:var(--f-display);font-size:22px;color:var(--accent)">음원차트 1위 달성!</p>':''}
@@ -659,7 +875,7 @@ function openSheet(html, modal){
   document.body.appendChild(scrim);
 }
 function closeSheet(){ const s=$('#scrim'); if (s) s.remove(); }
-function toast(t){ const el=document.createElement('div'); el.className='toast'; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(), 2600); }
+function toast(t){ document.querySelectorAll('.toast').forEach(e=>e.remove()); const el=document.createElement('div'); el.className='toast'; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(), 2600); }
 
 /* ───── 배경음악 ───── */
 const MUSIC_KEY = 'nextbeat-music';
