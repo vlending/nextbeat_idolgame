@@ -17,6 +17,7 @@
 | `<멤버>_neutral/smile/bigsmile/surprised/serious/upset.jpg` | 멤버별 3D 레퍼런스 시트(FACE TURNAROUND)의 표정 6종 | 멤버 카드, 결과, 사건 화면 |
 | `<멤버>_portrait.jpg` | 멤버별 단독 일러스트 | 멤버 상세 화면 상단 |
 | `key_egoring.jpg` | EGO RING 키 아트 | 시작 화면, 엔딩 |
+| `bgm.mp3` | NEXT BEAT - EGO Ring (Inst) | 배경음악 (반복 재생, 상단 버튼으로 켜기/끄기) |
 | `group_photo.jpg` | 4인 단체 일러스트 | 첫 1위 달성, TOP 10 엔딩 |
 
 표정 규칙: 컨디션 70 이상 `smile` · 50~69 `neutral` · 30~49 `serious` · 30 미만 `upset`, 대화 직후·무대 MVP `bigsmile`, 사건 발생 `surprised`.

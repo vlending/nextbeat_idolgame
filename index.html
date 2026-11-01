@@ -30,6 +30,8 @@ button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
 .status{font-size:12px;opacity:.75;margin-top:4px}
 .period{text-align:right;font-family:var(--f-display);font-size:18px}
 .period small{display:block;font-family:var(--f-body);font-size:11px;opacity:.7}
+.music{margin-top:8px;font-family:var(--f-body);font-size:11.5px;font-weight:600;color:var(--stage-ink);background:rgba(255,255,255,.12);border-radius:999px;padding:5px 10px}
+.music[aria-pressed="false"]{opacity:.55}
 .wallet{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;position:relative;z-index:1}
 .wallet div{background:rgba(255,255,255,.08);border-radius:12px;padding:8px 10px}
 .wallet span{display:block;font-size:11px;opacity:.7}
@@ -298,9 +300,11 @@ function renderTitle(){
       ${saved && !saved.ended ? `<button class="btn" id="cont">이어하기<small>${esc(saved.group)} · ${periodText(saved.month)}</small></button>` : ''}
       <div><label for="gname">그룹 이름</label><input id="gname" maxlength="14" value="NextBeat" autocomplete="off"></div>
       <button class="btn ${saved && !saved.ended ? 'alt':''}" id="start">새로 시작</button>
+      <div class="center">${musicBtn()}</div>
     </div>
   </section>`;
   $('#start').onclick = () => {
+    playMusic();
     const doStart = () => { S = newGame($('#gname').value.trim()); save(); renderMain(); intro(); };
     if (saved && !saved.ended){
       openSheet(`<h2>새로 시작할까요?</h2><p>이어하던 기록(${esc(saved.group)}, ${periodText(saved.month)})이 지워져요.</p>
@@ -308,7 +312,7 @@ function renderTitle(){
       $('#yes').onclick = () => { closeSheet(); doStart(); };
     } else doStart();
   };
-  if ($('#cont')) $('#cont').onclick = () => { S = saved; renderMain(); };
+  if ($('#cont')) $('#cont').onclick = () => { playMusic(); S = saved; renderMain(); };
 }
 
 function intro(){
@@ -330,7 +334,7 @@ function renderMain(){
   <header class="top">
     <div class="top-row">
       <div><div class="group">${esc(s.group)}</div><div class="status">${s.debuted ? `데뷔 ${s.stages.length-1 ? (s.stages.length-1)+'번째 컴백 완료' : '완료'} · 최고 ${s.bestRank}위` : '데뷔 준비 중인 연습생'}</div></div>
-      <div class="period num">${periodText(s.month)}<small>${s.month} / ${LAST_MONTH}개월</small></div>
+      <div class="period num">${periodText(s.month)}<small>${s.month} / ${LAST_MONTH}개월</small>${musicBtn()}</div>
     </div>
     <div class="wallet">
       <div><span>자금</span><b class="num" style="color:${s.money<0?'#FF8FA3':'inherit'}">${money(s.money)}</b></div>
@@ -562,6 +566,25 @@ function openSheet(html, modal){
 }
 function closeSheet(){ const s=$('#scrim'); if (s) s.remove(); }
 function toast(t){ const el=document.createElement('div'); el.className='toast'; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(), 2600); }
+
+/* ───── 배경음악 ───── */
+const MUSIC_KEY = 'nextbeat-music';
+const bgm = new Audio('assets/bgm.mp3');
+bgm.loop = true; bgm.volume = 0.45; bgm.preload = 'auto';
+let musicOn = true;
+try { musicOn = localStorage.getItem(MUSIC_KEY) !== 'off'; } catch(e){}
+function playMusic(){ if (musicOn) bgm.play().catch(()=>{}); }
+function setMusic(on){
+  musicOn = on;
+  try { localStorage.setItem(MUSIC_KEY, on ? 'on' : 'off'); } catch(e){}
+  on ? playMusic() : bgm.pause();
+  document.querySelectorAll('.music').forEach(b=>{ b.setAttribute('aria-pressed', on); b.textContent = on ? '♪ 음악 켜짐' : '♪ 음악 꺼짐'; });
+}
+const musicBtn = () => `<button class="music" aria-pressed="${musicOn}">${musicOn ? '♪ 음악 켜짐' : '♪ 음악 꺼짐'}</button>`;
+// 브라우저 정책상 첫 터치 이후에만 소리가 나므로, 화면을 처음 누를 때 재생 시작
+document.addEventListener('pointerdown', function first(){ playMusic(); document.removeEventListener('pointerdown', first); }, { once:true });
+document.addEventListener('click', e => { if (e.target.closest('.music')) setMusic(!musicOn); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.pause(); else if (musicOn && S) playMusic(); });
 
 /* ───── 시작 ───── */
 function start(){ renderTitle(); }
