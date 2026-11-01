@@ -154,7 +154,7 @@ const SAVE_KEY = 'nextbeat-idol-save-v2';
 const LAST_MONTH = 24;
 const LIVING_COST = 30; // 만원 / 월
 
-/* ───── 멤버 4명 (NEXT BEAT 캐릭터 설계 기준) ───── */
+/* ───── 멤버 4명 (NextBeat 캐릭터 설계 기준) ───── */
 const MEMBERS = [
   { id:'dorin', name:'도린', age:19, role:'메인댄서 · 래퍼', vibe:'차가운 에이스',
     motto:'겉은 차갑게, 속은 따뜻하게.', profile:[['생일','5월 14일'],['MBTI','INTJ'],['목소리','Soft Low ~ Cool'],['키 컬러','Deep Teal']],
@@ -265,7 +265,7 @@ const moodOf = m => m.cond < 30 ? 'tired' : m.cond < 50 ? 'worn' : m.cond >= 70 
 /* ───── 상태 ───── */
 let S = null;
 function newGame(groupName){
-  return { v:1, group: groupName || 'EGO RING', month:1, money:500, fans:0, debuted:false,
+  return { v:1, group: groupName || 'NextBeat', month:1, money:500, fans:0, debuted:false,
     lastStage:null, stages:[], bestRank:null, songBonus:0, lastConcept:null, ended:false, firstWin:false,
     members: MEMBERS.map(m=>({ id:m.id, ...m.base, cond:80, bond:10, chatted:false, sched:null, line:null })) };
 }
@@ -290,13 +290,13 @@ function renderTitle(){
   const saved = load();
   $('#app').innerHTML = `
   <section class="title">
-    <div class="keyart"><img src="assets/key_egoring.jpg" alt="EGO RING 멤버 4명이 꽃밭에서 어깨동무한 뒷모습"></div>
+    <div class="keyart"><img src="assets/key_egoring.jpg" alt="NextBeat 멤버 4명이 꽃밭에서 어깨동무한 뒷모습"></div>
     <h1>넥스트비트<br><em>데뷔 프로젝트</em></h1>
     <p>신생 기획사의 대표가 되어 연습생 4명을 2년 안에 음원차트 1위 걸그룹으로 키워보세요.</p>
     <div class="lineup">${MEMBERS.map(m=>`<div>${avatar(m.id,'happy')}<div>${m.name}</div></div>`).join('')}</div>
     <div class="btns">
       ${saved && !saved.ended ? `<button class="btn" id="cont">이어하기<small>${esc(saved.group)} · ${periodText(saved.month)}</small></button>` : ''}
-      <div><label for="gname">그룹 이름</label><input id="gname" maxlength="14" value="EGO RING" autocomplete="off"></div>
+      <div><label for="gname">그룹 이름</label><input id="gname" maxlength="14" value="NextBeat" autocomplete="off"></div>
       <button class="btn ${saved && !saved.ended ? 'alt':''}" id="start">새로 시작</button>
     </div>
   </section>`;
