@@ -182,6 +182,28 @@ button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
 .rh-end{position:absolute;inset:0;background:rgba(20,21,45,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center}
 .rh-end strong{font-family:var(--f-display);font-weight:400;font-size:96px;color:var(--gold);line-height:1}
 .rh-end .btn{flex:none;width:min(320px,100%);margin-top:14px}
+.eyebrow{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.04em;margin:0 0 4px!important}
+.story{display:grid;gap:10px;margin-top:12px}
+.say{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:start}
+.say img{width:52px;height:52px;border-radius:12px;object-fit:cover;display:block}
+.say b{font-size:12px;color:var(--sub)}.say p{background:var(--bg);border-radius:4px 14px 14px 14px;padding:9px 12px;margin-top:3px!important;line-height:1.55}
+.narr{font-size:13px;color:var(--sub);line-height:1.6;padding:0 4px}
+.opts.one{grid-template-columns:1fr}
+.result{margin-top:12px!important;font-weight:800;color:var(--cond);text-align:center}
+.unlock{margin-top:10px;background:linear-gradient(135deg,#FFE9A8,#FFD3E2);border-radius:14px;padding:12px 14px;display:grid;gap:2px}
+.unlock b{font-size:14px}.unlock span{font-size:12.5px;color:var(--ink)}
+.card .abil{position:absolute;top:6px;right:6px;background:var(--gold);color:var(--ink);font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px}
+.rh-tip{display:block;font-size:11px;color:var(--gold);margin-top:2px}
+.endings{display:grid;gap:10px;position:relative}
+.endings h3{font-size:12px;letter-spacing:.06em;margin:6px 0 0;opacity:.75}
+.ending{display:grid;grid-template-columns:56px 1fr;gap:12px;background:rgba(255,255,255,.07);border-radius:14px;padding:12px}
+.ending img{width:56px;height:56px;border-radius:12px;object-fit:cover;display:block}
+.ending small{font-size:11px;opacity:.7}.ending b{display:block;font-family:var(--f-display);font-weight:400;font-size:18px;margin:2px 0 4px}
+.ending p{font-size:13px;line-height:1.6;opacity:.85}
+.ending.t{background:rgba(255,185,56,.16);box-shadow:inset 0 0 0 1px rgba(255,185,56,.5)}
+.true-end{text-align:center;padding:18px;border-radius:16px;background:linear-gradient(135deg,rgba(255,79,139,.3),rgba(124,108,242,.3))}
+.true-end p{letter-spacing:.2em;font-size:12px;color:var(--gold);font-weight:800}
+.true-end h2{font-family:var(--f-display);font-weight:400;font-size:28px;margin:4px 0}.true-end span{font-size:13px;opacity:.85}
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--stage-ink);padding:10px 16px;border-radius:12px;z-index:40;font-size:13px;animation:up .2s;max-width:calc(100% - 32px)}
 </style>
 
@@ -245,6 +267,153 @@ const CONCEPTS = [
   { id:'dream', name:'몽환', w:{vocal:.35,dance:.15,charm:.5}, color:'#7C6CF2', desc:'신비로운 분위기. 매력 중심' },
   { id:'retro', name:'레트로', w:{vocal:.34,dance:.33,charm:.33}, color:'#FF8A3D', desc:'모두가 고른 능력치가 중요' },
 ];
+
+/* ───── 멤버 이야기 · 특별 능력 · 엔딩 ───── */
+const ABILITY = {
+  dorin:{ name:'숨은 배려', desc:'매달 컨디션이 가장 낮은 멤버를 +8 회복' },
+  garam:{ name:'진짜 웃음', desc:'SNS 라이브 팬 1.5배 · 연기·화보 수업 효과 +2' },
+  seon: { name:'무대 체질', desc:'무대에서 세온은 컨디션 영향 없음 · 무대 점수 +15' },
+  rie:  { name:'관찰 노트', desc:'리듬게임 판정 범위가 넓어짐' },
+};
+const has = (s,id) => (mem(s,id).ep||0) >= 3;
+// 대사: [말하는 사람(멤버 id 또는 'n' = 지문), 표정, 내용]
+const STORIES = {
+  dorin:[
+    { need:30, title:'새벽 3시의 연습실', lines:[
+      ['n','','새벽 3시. 연습실 불이 아직 켜져 있다. 도린이 혼자 같은 동작을 반복하고 있다.'],
+      ['dorin','serious','…대표님. 이 시간에 왜요.'],
+      ['dorin','neutral','2절 턴이 0.1초 늦어요. 저만 아는 차이지만, 저는 알아요.']],
+      a:{ label:'같이 영상 찍어서 봐줄게', good:true, lines:[['dorin','smile','…그럼 한 번만요. 진짜 한 번만.'],['n','','둘은 해가 뜰 때까지 영상을 돌려봤다.']],
+          fx:(s,m)=>{ m.dance=clamp(m.dance+4); m.bond=clamp(m.bond+10); return '도린 댄스 +4 · 호감도 +10'; } },
+      b:{ label:'무리하지 말고 들어가서 자', lines:[['dorin','serious','…알겠어요.'],['n','','연습실 불은 한 시간 뒤에야 꺼졌다.']],
+          fx:(s,m)=>{ m.cond=clamp(m.cond+10); m.bond=clamp(m.bond+3); return '도린 컨디션 +10 · 호감도 +3'; } } },
+    { need:60, title:'가방 속 비타민', lines:[
+      ['n','','지쳐 있던 리에의 가방에서 비타민과 쪽지가 나왔다. “무리 금지.”'],
+      ['rie','surprised','이거… 누가 넣어둔 거예요?'],
+      ['dorin','upset','…몰라요. 나 아니에요.']],
+      a:{ label:'모른 척 넘어간다', good:true, lines:[['n','','연습이 끝나고, 도린이 조용히 다가왔다.'],['dorin','smile','…모른 척해줘서 고마워요.']],
+          fx:(s,m)=>{ m.bond=clamp(m.bond+10); const r=mem(s,'rie'); r.bond=clamp(r.bond+5); return '도린 호감도 +10 · 리에 호감도 +5'; } },
+      b:{ label:'다 들리게 칭찬한다', lines:[['dorin','upset','대표님…!'],['n','','멤버들이 와르르 웃었다. 도린의 귀가 빨개졌다.']],
+          fx:(s,m)=>{ allCond(s,5); m.bond=clamp(m.bond+3); return '모두 컨디션 +5 · 도린 호감도 +3'; } } },
+    { need:90, title:'겉은 차갑게, 속은 따뜻하게', lines:[
+      ['dorin','neutral','저 원래 이런 말 안 하는데요.'],
+      ['dorin','serious','멤버들이 지치면 제가 제일 먼저 알아요. 근데 그걸 말로 하는 게 어려워요.']],
+      a:{ label:'말 대신 행동으로 해도 돼. 다들 알고 있어', good:true, lines:[['dorin','bigsmile','…그럼, 계속 그렇게 할게요.']],
+          fx:(s,m)=>{ m.bond=clamp(m.bond+10); return '도린 호감도 +10'; } },
+      b:{ label:'조금씩 말로도 표현해 보자', good:true, lines:[['dorin','upset','…노력해 볼게요. 조금씩.'],['n','','그날 저녁, 단체 채팅방에 도린의 메시지가 올라왔다. “다들 수고했어.”']],
+          fx:(s,m)=>{ s.members.forEach(x=>x.bond=clamp(x.bond+3)); return '모두 호감도 +3'; } } },
+  ],
+  garam:[
+    { need:30, title:'팬사인회 멘트 100개', lines:[
+      ['garam','bigsmile','대표님! 팬사인회에서 할 말 연습했어요! 들어보실래요?'],
+      ['n','','가람이 내민 노트에는 멘트가 100개 넘게 적혀 있다.']],
+      a:{ label:'끝까지 다 들어준다', good:true, lines:[['garam','bigsmile','진짜요?! 그럼 1번부터 갑니다!'],['n','','47번째 멘트쯤에서 둘 다 웃음이 터졌다.']],
+          fx:(s,m)=>{ m.charm=clamp(m.charm+4); m.bond=clamp(m.bond+10); return '가람 매력 +4 · 호감도 +10'; } },
+      b:{ label:'그 열정이면 충분해', lines:[['garam','smile','헤헤, 그쵸!']],
+          fx:(s,m)=>{ m.cond=clamp(m.cond+5); m.bond=clamp(m.bond+3); return '가람 컨디션 +5 · 호감도 +3'; } } },
+    { need:60, title:'옥상의 가람', lines:[
+      ['n','','늦은 밤 숙소 옥상. 가람이 혼자 조용히 앉아 있다.'],
+      ['garam','upset','…아, 대표님. 저 원래 이래요. 혼자 있으면 좀 조용해져요.'],
+      ['garam','neutral','다들 제가 늘 밝은 줄 알아서… 가끔은 그게 좀 무거워요.']],
+      a:{ label:'옆에 조용히 앉아 있는다', good:true, lines:[['n','','한참 동안 둘은 아무 말 없이 별을 봤다.'],['garam','smile','…이런 게 좋아요. 아무 말 안 해도 되는 거.']],
+          fx:(s,m)=>{ m.cond=clamp(m.cond+15); m.bond=clamp(m.bond+10); return '가람 컨디션 +15 · 호감도 +10'; } },
+      b:{ label:'기운 내! 너답지 않아', lines:[['garam','serious','…네, 그쵸. 저답게 웃어야죠.']],
+          fx:(s,m)=>{ m.cond=clamp(m.cond-5); m.bond=clamp(m.bond+2); return '가람 컨디션 -5 · 호감도 +2'; } } },
+    { need:90, title:'진짜 웃음', lines:[
+      ['garam','smile','그날 이후로요, 무대에서 웃는 게 더 쉬워졌어요.'],
+      ['garam','neutral','억지로 안 웃어도 된다고 생각하니까, 오히려 진짜로 웃게 되더라고요.']],
+      a:{ label:'그 웃음, 팬들도 알아볼 거야', good:true, lines:[['garam','bigsmile','헤헤, 그럼 오늘 라이브 방송 켜도 돼요?']],
+          fx:(s,m)=>{ m.charm=clamp(m.charm+3); return '가람 매력 +3'; } },
+      b:{ label:'앞으로도 힘들면 꼭 말해줘', good:true, lines:[['garam','smile','…네. 이제는 말할 수 있을 것 같아요.']],
+          fx:(s,m)=>{ m.cond=clamp(m.cond+10); m.bond=clamp(m.bond+5); return '가람 컨디션 +10 · 호감도 +5'; } } },
+  ],
+  seon:[
+    { need:30, title:'연습실의 차 한 잔', lines:[
+      ['seon','neutral','대표님, 따뜻한 차 드실래요? 다들 목 쓰는 일이라 끓여놨어요.'],
+      ['n','','테이블 위에 멤버 수만큼 컵이 놓여 있다. 아직 아무도 손대지 않았다.']],
+      a:{ label:'고마워, 다 같이 마시자', good:true, lines:[['n','','멤버들이 하나둘 모여 컵을 들었다.'],['seon','smile','다들 바빠서 잘 안 마셔주거든요. …고마워요.']],
+          fx:(s,m)=>{ allCond(s,5); m.bond=clamp(m.bond+10); return '모두 컨디션 +5 · 세온 호감도 +10'; } },
+      b:{ label:'너도 레슨 가야지?', lines:[['seon','serious','…아, 네. 금방 갈게요.']],
+          fx:(s,m)=>{ m.vocal=clamp(m.vocal+2); m.bond=clamp(m.bond+2); return '세온 보컬 +2 · 호감도 +2'; } } },
+    { need:60, title:'떨리는 손', lines:[
+      ['n','','녹음 전날 밤. 악보를 쥔 세온의 손이 떨리고 있다.'],
+      ['seon','upset','평소엔 괜찮은데… 이번 곡 하이라이트가 제 파트라서요.']],
+      a:{ label:'네가 노래할 때 제일 단단해 보여', good:true, lines:[['seon','serious','…맞아요. 노래만 시작하면 괜찮아져요.'],['n','','다음 날, 세온은 첫 테이크에서 녹음을 끝냈다.']],
+          fx:(s,m)=>{ m.vocal=clamp(m.vocal+4); m.bond=clamp(m.bond+10); return '세온 보컬 +4 · 호감도 +10'; } },
+      b:{ label:'부담되면 파트를 나눌까?', lines:[['seon','upset','…아니에요. 제가 할게요.']],
+          fx:(s,m)=>{ m.bond=clamp(m.bond+2); return '세온 호감도 +2'; } } },
+    { need:90, title:'무대 체질', lines:[
+      ['seon','neutral','노래를 시작하면 다른 소리가 하나도 안 들려요.'],
+      ['seon','serious','그 순간만큼은, 제가 제일 단단해요.']],
+      a:{ label:'그 목소리로 팀을 이끌어줘', good:true, lines:[['seon','bigsmile','네. 맡겨주세요.']],
+          fx:(s,m)=>{ m.vocal=clamp(m.vocal+3); return '세온 보컬 +3'; } },
+      b:{ label:'무대 밖에서는 편하게 지내', good:true, lines:[['seon','smile','…그럼 오늘은 차 한 잔 더 끓일게요.']],
+          fx:(s,m)=>{ m.cond=clamp(m.cond+10); m.bond=clamp(m.bond+5); return '세온 컨디션 +10 · 호감도 +5'; } } },
+  ],
+  rie:[
+    { need:30, title:'작은 메모장', lines:[
+      ['n','','쉬는 시간, 리에가 구석에서 작은 메모장에 무언가를 적고 있다.'],
+      ['rie','neutral','…아, 이거요? 연습할 때 눈에 띈 거 적어둬요.']],
+      a:{ label:'보여줄 수 있어?', good:true, lines:[['rie','surprised','…진짜 보실 거예요?'],['n','','메모장에는 멤버들 동선, 그날의 컨디션, 좋아하는 간식까지 빼곡하다.'],['rie','smile','…아무한테도 안 보여준 거예요.']],
+          fx:(s,m)=>{ m.bond=clamp(m.bond+10); return '리에 호감도 +10'; } },
+      b:{ label:'막내는 연습만 열심히 하면 돼', lines:[['rie','serious','…네.'],['n','','메모장이 조용히 닫혔다.']],
+          fx:(s,m)=>{ m.dance=clamp(m.dance+2); m.bond=clamp(m.bond+2); return '리에 댄스 +2 · 호감도 +2'; } } },
+    { need:60, title:'반 박자', lines:[
+      ['rie','serious','대표님. 도린 언니 2절 동선, 반 박자 늦어요.'],
+      ['rie','upset','근데 언니한테 직접 말하기가… 좀 무서워요.']],
+      a:{ label:'직접 말해봐. 언니도 들어줄 거야', good:true, lines:[['n','','리에가 쭈뼛쭈뼛 다가가 말했다.'],['dorin','surprised','…진짜네. 고마워, 리에.'],['rie','bigsmile','…!']],
+          fx:(s,m)=>{ m.bond=clamp(m.bond+10); const d=mem(s,'dorin'); d.dance=clamp(d.dance+3); return '리에 호감도 +10 · 도린 댄스 +3'; } },
+      b:{ label:'내가 대신 말해줄게', lines:[['rie','neutral','…네, 부탁드려요.']],
+          fx:(s,m)=>{ m.bond=clamp(m.bond+3); const d=mem(s,'dorin'); d.dance=clamp(d.dance+3); return '리에 호감도 +3 · 도린 댄스 +3'; } } },
+    { need:90, title:'관찰 노트', lines:[
+      ['rie','smile','요즘은 다들 무대 전에 저한테 물어봐요. “리에야, 오늘 뭐 이상한 거 없어?”'],
+      ['rie','bigsmile','…좀 좋아요, 그거.']],
+      a:{ label:'네 눈이 우리 팀의 무기야', good:true, lines:[['rie','upset','…그런 말 들으면 부끄러워요.']],
+          fx:(s,m)=>{ m.charm=clamp(m.charm+3); return '리에 매력 +3'; } },
+      b:{ label:'이제 네 이야기도 들려줘', good:true, lines:[['rie','surprised','…제 이야기요?'],['rie','smile','그럼… 메모장 마지막 장, 보여드릴게요.']],
+          fx:(s,m)=>{ m.bond=clamp(m.bond+8); return '리에 호감도 +8'; } } },
+  ],
+};
+const ENDINGS = {
+  dorin:{ t:['겉은 차갑게, 속은 따뜻하게','무대 위의 도린은 여전히 차갑게 빛났다. 하지만 멤버들은 안다. 가장 먼저 물을 건네는 사람이 누구인지. 데뷔 2년 차, 도린은 처음으로 팬들 앞에서 말했다. “…다들, 고마워요.”'],
+          n:['실력파 에이스','도린은 “퍼포먼스 하면 도린”이라는 평가를 얻었다. 연습실 불은 오늘도 가장 늦게 꺼진다.'],
+          b:['닫힌 문','도린은 끝까지 속마음을 드러내지 않았다. 실력은 인정받았지만, 대표와의 거리는 그대로였다.'] },
+  garam:{ t:['진짜 웃음','가람은 이제 억지로 웃지 않는다. 그래서 그 웃음은 더 많은 사람에게 닿았다. 팬사인회 줄은 언제나 가람 앞이 가장 길다.'],
+          n:['모두의 비타민','가람은 그룹의 분위기 메이커로 사랑받았다. 가끔 옥상에 혼자 앉아 있는 모습을 아는 사람은 많지 않다.'],
+          b:['웃음 뒤의 그림자','가람은 늘 웃고 있었다. 그 웃음이 조금씩 지쳐간다는 걸, 아무도 눈치채지 못했다.'] },
+  seon: { t:['가장 단단한 목소리','세온의 라이브는 “음원보다 좋다”는 평을 받았다. 노래가 시작되는 순간, 떨리던 손은 더 이상 떨리지 않는다.'],
+          n:['따뜻한 메인보컬','세온은 안정적인 보컬로 그룹을 받쳤다. 연습실에는 오늘도 세온이 끓인 차 냄새가 난다.'],
+          b:['삼켜진 목소리','세온은 맡은 파트를 실수 없이 해냈다. 하지만 정말 부르고 싶었던 노래는 끝내 말하지 못했다.'] },
+  rie:  { t:['관찰 노트','리에의 메모장은 이제 그룹의 보물이다. 무대 전마다 멤버들이 묻는다. “리에야, 오늘 뭐 이상한 거 없어?” 막내는 조용히, 정확하게 답한다.'],
+          n:['조용한 막내','리에는 묵묵히 성장해 든든한 서브보컬이 되었다. 메모장은 여전히 가방 속에 있다.'],
+          b:['닫힌 메모장','리에는 많은 것을 보았지만 아무것도 말하지 않았다. 메모장은 어느새 서랍 깊숙이 들어갔다.'] },
+};
+const endingType = m => (m.ep>=3 && m.good>=2) ? 't' : (m.ep>=2 || m.bond>=50) ? 'n' : 'b';
+
+function checkStory(){
+  const c = S.members.filter(m => (m.ep||0) < 3 && m.bond >= STORIES[m.id][m.ep||0].need).sort((a,b)=>b.bond-a.bond)[0];
+  if (c) openStory(c);
+}
+function storyLine([who, face, text]){
+  return who==='n' ? `<p class="narr">${text}</p>`
+    : `<div class="say">${avatar(who, face)}<div><b>${BY_ID[who].name}</b><p>${text}</p></div></div>`;
+}
+function openStory(m){
+  const d = BY_ID[m.id], ep = STORIES[m.id][m.ep||0], no = (m.ep||0)+1;
+  openSheet(`<p class="eyebrow">${d.name}의 이야기 ${no}/3</p><h2>${ep.title}</h2>
+    <div class="story">${ep.lines.map(storyLine).join('')}</div>
+    <div id="stc"><h3>대표님의 선택</h3><div class="opts one"><button class="opt" data-c="a"><b>${ep.a.label}</b></button><button class="opt" data-c="b"><b>${ep.b.label}</b></button></div></div>`, true);
+  document.querySelectorAll('#stc .opt').forEach(b=>b.onclick=()=>{
+    const ch = ep[b.dataset.c];
+    m.ep = no; if (ch.good) m.good = (m.good||0)+1;
+    let msg = ch.fx(S, m);
+    const unlock = no===3 ? `<div class="unlock"><b>특별 능력 「${ABILITY[m.id].name}」 해금!</b><span>${ABILITY[m.id].desc}</span></div>` : '';
+    save();
+    $('#stc').innerHTML = `<div class="story">${ch.lines.map(storyLine).join('')}</div><p class="result">${msg}</p>${unlock}
+      <div class="row-btns"><button class="btn" id="stOk">계속</button></div>`;
+    $('#stOk').onclick = () => { closeSheet(); renderMain(); };
+  });
+}
 
 /* ───── 투자 ───── */
 const FACILITIES = [
@@ -334,7 +503,8 @@ const esc = t => String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const FACE = { happy:'smile', normal:'neutral', worn:'serious', tired:'upset', big:'bigsmile', surprised:'surprised' };
 function avatar(id, mood){
   const m = BY_ID[id];
-  return `<img src="assets/${id}_${FACE[mood]||'neutral'}.jpg" alt="${m.name}" loading="lazy" decoding="async">`;
+  const f = FACE[mood] || (['neutral','smile','bigsmile','surprised','serious','upset'].includes(mood) ? mood : 'neutral');
+  return `<img src="assets/${id}_${f}.jpg" alt="${m.name}" loading="lazy" decoding="async">`;
 }
 const moodOf = m => m.cond < 30 ? 'tired' : m.cond < 50 ? 'worn' : m.cond >= 70 ? 'happy' : 'normal';
 
@@ -344,9 +514,9 @@ function newGame(groupName){
   return { v:1, group: groupName || 'NextBeat', month:1, money:500, fans:0, debuted:false,
     lastStage:null, stages:[], bestRank:null, songBonus:0, lastConcept:null, ended:false, firstWin:false,
     fac:{}, prep:{}, beaten:[],
-    members: MEMBERS.map(m=>({ id:m.id, ...m.base, cond:80, bond:10, chatted:false, sched:null, line:null })) };
+    members: MEMBERS.map(m=>({ id:m.id, ...m.base, cond:80, bond:10, ep:0, good:0, chatted:false, sched:null, line:null })) };
 }
-function migrate(s){ s.fac = s.fac || {}; s.prep = s.prep || {}; s.beaten = s.beaten || []; return s; }
+function migrate(s){ s.fac = s.fac || {}; s.prep = s.prep || {}; s.beaten = s.beaten || []; s.members.forEach(m=>{ m.ep = m.ep||0; m.good = m.good||0; }); return s; }
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ const t=localStorage.getItem(SAVE_KEY); return t?JSON.parse(t):null; }catch(e){ return null; } }
 
@@ -405,6 +575,7 @@ function intro(){
     · 무대에서는 <b>리듬게임</b>을 해요. 박자에 맞춰 터치할수록 점수가 올라요.<br>
     · 남는 돈은 <b>투자</b>하세요. 시설은 영구 효과, 뮤비·의상·곡은 다음 무대 점수를 올려요.<br>
     · <b>라이벌 그룹</b>을 차례로 넘어서면 팬이 크게 늘어요.<br>
+    · 호감도가 오르면 멤버의 <b>이야기</b>가 열려요. 3편을 다 보면 특별 능력이 생기고, 마지막에 멤버별 엔딩이 갈려요.<br>
     · 목표: <b>${LAST_MONTH}개월 안에 1위!</b></p>
     <div class="row-btns"><button class="btn" data-close>시작하기</button></div>`);
 }
@@ -432,7 +603,7 @@ function renderMain(){
   <main class="grid">
     ${s.members.map(m=>{ const d=BY_ID[m.id]; const sc=m.sched?SCHED[m.sched]:null; return `
     <button class="card" data-m="${m.id}" style="--tint:${d.tint}">
-      <div class="av">${avatar(m.id, moodOf(m))}${m.cond<30?'<span class="tired">지침</span>':''}</div>
+      <div class="av">${avatar(m.id, moodOf(m))}${m.cond<30?'<span class="tired">지침</span>':''}${has(s,m.id)?'<span class="abil">능력</span>':''}</div>
       <div><div class="name">${d.name}</div><div class="role">${d.role}</div></div>
       <div class="bars">${bar('vocal',m.vocal)}${bar('dance',m.dance)}${bar('charm',m.charm)}${bar('cond',m.cond,'컨디')}</div>
       <div class="chip ${sc?'set':''}">${sc ? schedName(m.sched) : '일정 정하기 ›'}</div>
@@ -471,6 +642,8 @@ function openMember(id){
     <div class="swatches">${d.colors.map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')}</div>
     <div class="bars mbars">${bar('vocal',m.vocal)}${bar('dance',m.dance)}${bar('charm',m.charm)}${bar('cond',m.cond,'컨디')}</div>
     <p class="trait">${d.trait}</p>
+    <p class="trait">이야기 ${m.ep||0}/3${(m.ep||0)<3?` · 다음 이야기는 호감도 ${STORIES[id][m.ep||0].need}에 열려요 (지금 ${m.bond})`:''}</p>
+    ${has(S,id)?`<div class="unlock"><b>특별 능력 「${ABILITY[id].name}」</b><span>${ABILITY[id].desc}</span></div>`:''}
     <div class="bubble"><div class="face">${avatar(id, face)}</div><div><span class="who">${d.name} · 호감도 <span class="hearts">${hearts}</span></span>${esc(line)}</div></div>
     <button class="talk" id="talk" ${m.chatted?'disabled':''}>${m.chatted?'이번 달 대화 완료':'대화하기 (호감도 +5)'}</button>
     <h3>이번 달 일정</h3>
@@ -503,6 +676,7 @@ function runMonth(){
       let g = rnd(5,8) * (d.boost[sc.stat]||1) * (1 + m.bond/200);
       if (tired) g *= 0.4;
       if (s.fac[FAC_STAT[sc.stat]]) g += 2;
+      if (sc.stat==='charm' && has(s,'garam')) g += 2;
       const before = m[sc.stat]; m[sc.stat] = clamp(m[sc.stat]+g); const gain = m[sc.stat]-before;
       parts.push(`${STAT_LABEL[sc.stat]} <span class="up">+${gain}</span>`);
       if (!tired && Math.random()<0.35){
@@ -516,7 +690,7 @@ function runMonth(){
         const f = addFans(s, 30 + m.charm*2); parts.push(`수입 <span class="up">+${inc}만원</span> · 팬 <span class="up">+${fmt(f)}</span>`);
       } else { s.money += 35; parts.push('수입 <span class="up">+35만원</span>'); }
     } else if (k==='sns'){
-      const f = addFans(s, ((20 + m.charm*3 + m.bond) * (s.debuted ? 4 : 1) + s.fans*0.01) * (s.fac.pr ? 1.5 : 1));
+      const f = addFans(s, ((20 + m.charm*3 + m.bond) * (s.debuted ? 4 : 1) + s.fans*0.01) * (s.fac.pr ? 1.5 : 1) * (has(s,'garam') ? 1.5 : 1));
       parts.push(`팬 <span class="up">+${fmt(f)}</span>`);
     }
     const bc = m.cond; m.cond = clamp(m.cond + sc.cond + (k==='rest' && s.fac.lounge ? 15 : 0)); const dc = m.cond-bc;
@@ -524,6 +698,8 @@ function runMonth(){
     rows.push({ id:m.id, title:`${d.name} · ${schedName(k)}`, text:parts.join(' · ') });
   }
   s.money -= LIVING_COST;
+  const extra = [];
+  if (has(s,'dorin')){ const low = s.members.slice().sort((a,b)=>a.cond-b.cond)[0]; low.cond = clamp(low.cond+8); extra.push(`도린의 숨은 배려: ${BY_ID[low.id].name} 컨디션 +8`); }
   // 데뷔 후에는 팬들이 조금씩 자연 증가 + 음원 수익
   let passive = '';
   if (s.debuted){
@@ -534,7 +710,7 @@ function runMonth(){
   const ev = Math.random()<0.6 ? pick(evPool) : null;
   s.members.forEach(m=>{ m.chatted=false; m.line=null; });
   save();
-  showResult(rows, passive, ev);
+  showResult(rows, [passive, ...extra].filter(Boolean).join(' · '), ev);
 }
 
 function showResult(rows, passive, ev){
@@ -554,7 +730,7 @@ function showResult(rows, passive, ev){
   $('#go').onclick = () => {
     closeSheet();
     if (S.month >= LAST_MONTH){ S.ended = true; save(); showEnding(saveRecord(S)); return; }
-    S.month++; save(); renderMain();
+    S.month++; save(); renderMain(); checkStory();
     if (S.money < 0) toast('자금이 마이너스예요! 아르바이트·행사로 수입을 늘려주세요.');
   };
 }
@@ -607,14 +783,14 @@ function startRhythm(c, onDone){
   }
   notes.forEach(n=>n.res=null);
   const ov = document.createElement('div'); ov.className = 'rhythm';
-  ov.innerHTML = `<div class="rh-top"><div><b>${c.name} 무대</b><span id="rhAcc">정확도 -</span></div><button id="rhSkip">건너뛰기</button></div>
+  ov.innerHTML = `<div class="rh-top"><div><b>${c.name} 무대</b><span id="rhAcc">정확도 -</span>${has(s,'rie')?'<span class="rh-tip">리에의 관찰 노트: 판정 범위 확대</span>':''}</div><button id="rhSkip">건너뛰기</button></div>
     <canvas id="rhc" aria-label="리듬게임: 노트가 선에 닿을 때 해당 멤버 칸을 터치하세요"></canvas>
     <div class="rh-lanes">${s.members.map((m,i)=>`<button data-l="${i}" style="--lc:${LANE_COLOR[m.id]}">${avatar(m.id,'normal')}<span>${BY_ID[m.id].name}</span></button>`).join('')}</div>`;
   document.body.appendChild(ov);
   const cv = $('#rhc'), g = cv.getContext('2d');
   const fit = () => { const r = cv.getBoundingClientRect(), d = devicePixelRatio||1; cv.width = r.width*d; cv.height = r.height*d; g.setTransform(d,0,0,d,0,0); };
   fit(); addEventListener('resize', fit);
-  const APPROACH = 1.4, PERFECT = 0.075, GOOD = 0.15;
+  const wide = has(s,'rie'), APPROACH = 1.4, PERFECT = wide ? 0.095 : 0.075, GOOD = wide ? 0.2 : 0.15;
   let t0 = performance.now(), done = false, combo = 0, maxCombo = 0, flashes = [];
   const useAudio = musicOn;
   if (useAudio){ try{ bgm.currentTime = startT; }catch(e){} bgm.play().catch(()=>{}); }
@@ -696,14 +872,15 @@ function perform(cid, acc, rs){
   let perf = 0;
   for (const m of s.members){
     const v = m.vocal*c.w.vocal + m.dance*c.w.dance + m.charm*c.w.charm;
-    perf += v * 3 * (0.6 + 0.4*m.cond/100);
+    perf += v * 3 * ((m.id==='seon' && has(s,'seon')) ? 1 : (0.6 + 0.4*m.cond/100));
   }
   perf = Math.round(perf);
+  const abil = has(s,'seon') ? 15 : 0;
   const buzz = Math.round(Math.log10(s.fans + 10) * 22);
   const rhythm = Math.round((acc - 0.55) * 150);
   const prep = prepBonus(s) + s.songBonus;
   const luck = rnd(-8,8);
-  let score = perf + buzz + rhythm + prep + luck;
+  let score = perf + buzz + rhythm + prep + abil + luck;
   const stale = s.lastConcept === cid;
   if (stale) score *= 0.9;
   score = Math.round(score);
@@ -737,7 +914,7 @@ function perform(cid, acc, rs){
     <div class="breakdown">
       ${row('멤버 능력치', perf)}${row('팬 화제성', buzz)}
       ${row('무대 퍼포먼스', rhythm, rs.skipped?'건너뜀':`정확도 ${Math.round(acc*100)}%`)}
-      ${prep?row('투자·준비', prep):''}${row('운', luck)}
+      ${prep?row('투자·준비', prep):''}${abil?row('특별 능력', abil, '세온의 무대 체질'):''}${row('운', luck)}
       ${stale?`<div><span>같은 컨셉 반복</span><b class="down">-10%</b></div>`:''}
     </div>
     ${newly.length?`<div class="beat">${newly.map(r=>`<p><b>라이벌 ${r.name} 격파!</b> 팬 +${fmt(r.reward)}</p>`).join('')}</div>`:''}
@@ -772,7 +949,8 @@ function loadRecords(){ try{ return JSON.parse(localStorage.getItem(RECORDS_KEY)
 function saveRecord(s){
   const top = s.members.map(m=>({id:m.id, total:m.vocal+m.dance+m.charm})).sort((a,b)=>b.total-a.total)[0];
   const rec = { date:new Date().toISOString().slice(0,10), group:s.group, bestRank:s.bestRank, fans:s.fans,
-    stages:s.stages.length, grade:gradeOf(s.bestRank)[0], ace:top.id };
+    stages:s.stages.length, grade:gradeOf(s.bestRank)[0], ace:top.id,
+    members:s.members.map(m=>({ id:m.id, ep:m.ep||0, good:m.good||0, bond:m.bond })) };
   const list = [rec, ...loadRecords()].slice(0,10);
   try{ localStorage.setItem(RECORDS_KEY, JSON.stringify(list)); }catch(e){}
   return rec;
@@ -803,12 +981,25 @@ async function drawCard(rec){
     g.fillStyle='rgba(244,242,255,.7)'; g.font=`600 28px ${B}`; g.fillText(k,x+28,y+48);
     g.fillStyle='#F4F2FF'; g.font=`800 46px ${B}`; g.fillText(v,x+28,y+110); });
   g.fillStyle='rgba(244,242,255,.6)'; g.font=`600 28px ${B}`;
-  g.fillText(`에이스 ${BY_ID[rec.ace]?.name||''} · ${rec.date}`,64,H-64);
+  const tc = (rec.members||[]).filter(m=>endingType(m)==='t').length;
+  g.fillText(`${rec.members?`멤버 트루 엔딩 ${tc}/4`:`에이스 ${BY_ID[rec.ace]?.name||''}`} · ${rec.date}`,64,H-64);
   g.textAlign='right'; g.fillStyle='#FF4F8B'; g.font=`40px ${D}`; g.fillText('넥스트비트 데뷔 프로젝트',W-64,H-60);
   return c;
 }
 function roundRect(g,x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
 
+function memberEndings(rec){
+  const types = rec.members.map(endingType);
+  const trueAll = types.every(t=>t==='t') && rec.bestRank===1;
+  const label = { t:'트루 엔딩', n:'일반 엔딩', b:'아쉬운 엔딩' }, face = { t:'bigsmile', n:'smile', b:'serious' };
+  return `<div class="endings">
+    ${trueAll ? `<div class="true-end"><p>TRUE ENDING</p><h2>같은 비트, 다른 나</h2><span>서로 달랐던 네 사람은, 서로 달랐기에 함께 정상에 섰다.</span></div>` : ''}
+    <h3>멤버들의 이야기 · 트루 엔딩 ${types.filter(t=>t==='t').length}/4</h3>
+    ${rec.members.map((m,i)=>{ const e = ENDINGS[m.id][types[i]];
+      return `<div class="ending ${types[i]}">${avatar(m.id, face[types[i]])}<div><small>${BY_ID[m.id].name} · ${label[types[i]]}</small><b>${e[0]}</b><p>${e[1]}</p></div></div>`; }).join('')}
+    ${types.some(t=>t!=='t') ? '<p class="hint">멤버와 자주 대화해 호감도를 올리고, 이야기에서 멤버를 이해하는 선택을 하면 트루 엔딩이 열려요.</p>' : ''}
+  </div>`;
+}
 function showEnding(rec){
   const [grade, msg] = gradeOf(rec.bestRank);
   const t = encodeURIComponent(shareText(rec)), u = encodeURIComponent(SHARE_URL);
@@ -819,6 +1010,7 @@ function showEnding(rec){
     <p>${msg}</p>
     <div class="keyart" id="card"><img src="assets/${rec.bestRank && rec.bestRank<=10 ? 'group_photo' : 'key_egoring'}.jpg" alt="${esc(rec.group)} 멤버 4명"></div>
     <p class="hint" id="hint">결과 카드를 만드는 중…</p>
+    ${rec.members ? memberEndings(rec) : ''}
     <div class="wallet" style="margin:0">
       <div><span>최고 순위</span><b class="num">${rec.bestRank?rec.bestRank+'위':'-'}</b></div>
       <div><span>팬</span><b class="num">${fmt(rec.fans)}</b></div>
