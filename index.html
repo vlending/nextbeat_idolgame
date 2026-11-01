@@ -210,6 +210,33 @@ button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
 .alog.run b::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:6px;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.2}}
 .tools .tool{padding:9px 8px}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.mini .mg-body{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px;padding-block:8px 24px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));width:100%;max-width:480px;margin:0 auto;overflow:auto}
+.mg-face img{width:84px;height:84px;border-radius:18px;object-fit:cover;display:block;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.mg-msg{text-align:center;line-height:1.6;font-size:15px;min-height:3.2em;margin:0}
+.mg-msg b{color:var(--gold)}
+#mgStage{width:100%;display:flex;flex-direction:column;align-items:center;gap:16px}
+.pitch{position:relative;width:100%;height:120px;border-radius:16px;background:linear-gradient(90deg,#2B2E66,#4B2F6E);overflow:hidden}
+.pz{position:absolute;top:0;bottom:24px;background:rgba(255,185,56,.35);border-left:2px solid var(--gold);border-right:2px solid var(--gold)}
+.pn{position:absolute;top:8px;bottom:30px;width:4px;margin-left:-2px;border-radius:2px;background:#fff;box-shadow:0 0 12px #fff}
+.ptrack{position:absolute;inset:0 16px}
+.pscale{position:absolute;left:0;right:0;bottom:4px;height:16px;font-size:11px;opacity:.7}
+.pscale span{position:absolute;transform:translateX(-50%)}
+.pscale span::before{content:"";position:absolute;left:50%;bottom:16px;width:1px;height:6px;background:rgba(255,255,255,.4)}
+.mg-dots{display:flex;gap:8px}.mg-dots i{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.18)}
+.mg-dots i.ok{background:var(--cond)}.mg-dots i.mid{background:var(--gold)}.mg-dots i.ng{background:var(--warn)}
+.mg-tap{flex:none;width:min(320px,100%);font-size:22px;padding:20px}
+.beats{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;width:100%}
+.beats i{aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25)}
+.beats i:nth-child(n+5){border-style:dashed}
+.beats i.on{background:var(--accent);border-color:var(--accent)}.beats i.tap{background:#fff}
+.beats i.ok{background:var(--cond);border-color:var(--cond)}.beats i.mid{background:var(--gold);border-color:var(--gold)}.beats i.ng{background:var(--warn);border-color:var(--warn)}
+.mg-dev{font-size:12px;opacity:.8;min-height:1.4em;margin:0;text-align:center}
+.mg-pad{width:min(220px,70vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FF7FAA,var(--accent));color:#fff;font-family:var(--f-display);font-size:34px;box-shadow:0 10px 0 #C93268;touch-action:none}
+.mg-pad:active{transform:translateY(5px);box-shadow:0 5px 0 #C93268}
+.pads{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.pad{aspect-ratio:1.4;border-radius:18px;background:var(--pc);color:#fff;font-family:var(--f-display);font-size:24px;opacity:.55;transition:opacity .1s,transform .1s;touch-action:none}
+.pad:not([disabled]){opacity:.85}.pad.lit{opacity:1;transform:scale(1.04);box-shadow:0 0 24px var(--pc)}
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--stage-ink);padding:10px 16px;border-radius:12px;z-index:40;font-size:13px;animation:up .2s;max-width:calc(100% - 32px)}
 </style>
 
@@ -705,6 +732,7 @@ function intro(){
     · 무대에서는 <b>리듬게임</b>을 해요. 박자에 맞춰 터치할수록 점수가 올라요.<br>
     · 남는 돈은 <b>투자</b>하세요. 시설은 영구 효과, 뮤비·의상·곡은 다음 무대 점수를 올려요.<br>
     · <b>라이벌 그룹</b>을 차례로 넘어서면 팬이 크게 늘어요.<br>
+    · 멤버 화면에서 매달 한 번 <b>특훈 미니게임</b>(음정 맞추기·박자 감각·멜로디 기억)으로 능력치를 더 올릴 수 있어요.<br>
     · 호감도가 오르면 멤버의 <b>이야기</b>가 열려요. 3편을 다 보면 특별 능력이 생기고, 마지막에 멤버별 엔딩이 갈려요.<br>
     · 목표: <b>${LAST_MONTH}개월 안에 1위!</b></p>
     <div class="row-btns"><button class="btn" data-close>시작하기</button></div>`);
@@ -782,6 +810,9 @@ function openMember(id){
     ${has(S,id)?`<div class="unlock"><b>특별 능력 「${ABILITY[id].name}」</b><span>${ABILITY[id].desc}</span></div>`:''}
     <div class="bubble"><div class="face">${avatar(id, face)}</div><div><span class="who">${d.name} · 호감도 <span class="hearts">${hearts}</span></span>${esc(line)}</div></div>
     <button class="talk" id="talk" ${m.chatted?'disabled':''}>${m.chatted?'이번 달 대화 완료':'대화하기 (호감도 +5)'}</button>
+    <h3>특훈 미니게임 · ${S.trainMonth===S.month?'이번 달 완료':'이번 달 1회 (멤버 1명)'}</h3>
+    <div class="opts three">${MINIGAMES.map(g=>{ const off = S.trainMonth===S.month || m.cond<20;
+      return `<button class="opt ${off?'bad':''}" data-g="${g.id}"><b>${g.name}</b><span>${S.trainMonth===S.month?'다음 달에 다시':m.cond<20?'너무 지쳤어요':g.stat==='vocal'?'보컬':g.stat==='dance'?'댄스':'매력'} ↑</span></button>`; }).join('')}</div>
     <h3>이번 달 일정</h3>
     <div class="opts">${Object.keys(SCHED).map(k=>{
       const c=SCHED[k]; const poor = c.cost>0 && S.money - plannedCost(id) < c.cost;
@@ -793,7 +824,8 @@ function openMember(id){
     m.line = m.cond < 30 ? pick(d.lines.low) : pick(d.lines.hi);
     save(); renderMain(); openMember(id);
   };
-  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ m.sched=b.dataset.s; save(); closeSheet(); renderMain(); });
+  document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ m.sched=b.dataset.s; save(); closeSheet(); renderMain(); });
+  document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{ closeSheet(); playMini(b.dataset.g, id); });
 }
 function plannedCost(exceptId){ return S.members.reduce((t,m)=> t + (m.id!==exceptId && m.sched ? SCHED[m.sched].cost : 0), 0); }
 
@@ -996,6 +1028,155 @@ function startRhythm(c, onDone){
     requestAnimationFrame(draw);
   };
   requestAnimationFrame(draw);
+}
+
+/* ───── 특훈 미니게임 (음악) ───── */
+const MINIGAMES = [
+  { id:'pitch',  name:'음정 맞추기', stat:'vocal', how:'기준음을 듣고, 움직이는 음이 같은 높이가 될 때 「멈춰!」를 누르세요.' },
+  { id:'count',  name:'박자 감각',   stat:'dance', how:'메트로놈 4박을 들은 뒤, 소리 없이 이어지는 4박에 맞춰 터치하세요.' },
+  { id:'melody', name:'멜로디 기억', stat:'charm', how:'버튼이 들려주는 멜로디를 기억했다가 같은 순서로 누르세요.' },
+];
+let actx = null;
+function ac(){ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); if (actx.state==='suspended') actx.resume(); return actx; }
+function tone(freq, dur=0.25, type='sine', vol=0.2, at=0){
+  const a = ac(), t = at || a.currentTime, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t+0.01); g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t+dur+0.03);
+}
+const NOTE_NAMES = ['도','레','미','파','솔','라','시','도'];
+const SCALE = [0,2,4,5,7,9,11,12];
+const pitchFreq = pos => 261.63 * Math.pow(2, pos);   // pos 0~1 = 한 옥타브
+
+function playMini(gid, mid){
+  const g = MINIGAMES.find(x=>x.id===gid), d = BY_ID[mid];
+  bgm.volume = 0.06;
+  const ov = document.createElement('div'); ov.className = 'rhythm mini';
+  ov.innerHTML = `<div class="rh-top"><div><b>${g.name}</b><span>${d.name}의 특훈</span></div><button id="mgQuit">그만하기</button></div>
+    <div class="mg-body"><div class="mg-face">${avatar(mid,'serious')}</div><p class="mg-msg" id="mgMsg">${g.how}</p><div id="mgStage"></div></div>`;
+  document.body.appendChild(ov);
+  let over = false;
+  const cleanups = [];
+  const finish = (score) => {
+    if (over) return; over = true; cleanups.forEach(f=>f());
+    score = Math.max(0, Math.min(100, Math.round(score)));
+    const m = mem(S, mid), gain = 1 + Math.round(score/20);
+    m[g.stat] = clamp(m[g.stat] + gain); m.cond = clamp(m.cond - 5); m.bond = clamp(m.bond + (score>=90 ? 5 : 2));
+    S.trainMonth = S.month; save();
+    const grade = score>=90?'S':score>=75?'A':score>=55?'B':score>=35?'C':'D';
+    ov.insertAdjacentHTML('beforeend', `<div class="rh-end"><div class="mg-face">${avatar(mid, score>=75?'big':score>=35?'smile':'upset')}</div><p>${g.name} 평가</p><strong>${grade}</strong>
+      <p class="num">${score}점 · ${d.name} ${STAT_LABEL[g.stat]} +${gain} · 호감도 +${score>=90?5:2} · 컨디션 -5</p><button class="btn" id="mgOk">확인</button></div>`);
+    $('#mgOk').onclick = () => { ov.remove(); bgm.volume = 0.45; renderMain(); };
+  };
+  $('#mgQuit').onclick = () => { over = true; cleanups.forEach(f=>f()); ov.remove(); bgm.volume = 0.45; };
+  const msg = t => { const e = $('#mgMsg'); if (e) e.innerHTML = t; };
+  const stage = $('#mgStage');
+  const later = (fn, ms) => { const t = setTimeout(()=>{ if (!over) fn(); }, ms); cleanups.push(()=>clearTimeout(t)); };
+  ({ pitch:miniPitch, count:miniCount, melody:miniMelody })[gid]({ stage, msg, later, finish, cleanups, isOver:()=>over });
+}
+
+// ① 음정 맞추기: 움직이는 음이 기준음과 같아질 때 멈추기 (5라운드, 점점 빨라지고 범위가 좁아짐)
+function miniPitch({ stage, msg, later, finish, cleanups, isOver }){
+  stage.innerHTML = `<div class="pitch"><div class="ptrack"><div class="pz" id="pz"></div><div class="pn" id="pn"></div>
+    <div class="pscale">${NOTE_NAMES.map((n,i)=>`<span style="left:${SCALE[i]/12*100}%">${n}</span>`).join('')}</div></div></div>
+    <div class="mg-dots" id="pdots">${'<i></i>'.repeat(5)}</div><button class="btn mg-tap" id="pTap" disabled>멈춰!</button>`;
+  const ROUNDS = 5, scores = [];
+  let r = 0, target = 0, width = 0, running = false, raf = 0, osc = null, gain = null, t0 = 0, pos = 0;
+  const stopOsc = () => { if (osc){ try{ gain.gain.setTargetAtTime(0.0001, ac().currentTime, 0.02); osc.stop(ac().currentTime+0.1); }catch(e){} osc = null; } };
+  cleanups.push(()=>{ cancelAnimationFrame(raf); stopOsc(); });
+  const round = () => {
+    const ti = rnd(1,6); target = SCALE[ti]/12; width = 0.16 - r*0.02;
+    const pz = $('#pz'); pz.style.left = `${(target-width/2)*100}%`; pz.style.width = `${width*100}%`;
+    msg(`라운드 ${r+1}/${ROUNDS} · 기준음 <b>${NOTE_NAMES[ti]}</b>을 잘 들어보세요`);
+    tone(pitchFreq(target), 0.8, 'triangle', 0.25);
+    later(()=>{
+      msg('같은 음이 되는 순간 「멈춰!」');
+      const a = ac(); osc = a.createOscillator(); gain = a.createGain(); osc.type = 'triangle'; gain.gain.value = 0.12;
+      osc.connect(gain).connect(a.destination); osc.start();
+      running = true; t0 = performance.now(); $('#pTap').disabled = false;
+      const speed = 0.35 + r*0.09, ph = Math.random();
+      const tick = () => { if (!running || isOver()) return;
+        const x = ((performance.now()-t0)/1000*speed + ph) % 2; pos = x<1 ? x : 2-x;
+        $('#pn').style.left = `${pos*100}%`; osc.frequency.setTargetAtTime(pitchFreq(pos), ac().currentTime, 0.01);
+        raf = requestAnimationFrame(tick); };
+      tick();
+    }, 1100);
+  };
+  $('#pTap').onclick = () => {
+    if (!running) return; running = false; cancelAnimationFrame(raf); stopOsc(); $('#pTap').disabled = true;
+    const dist = Math.abs(pos - target), half = width/2;
+    const pt = dist <= half*0.4 ? 100 : dist <= half ? 75 : dist <= half*2 ? 35 : 0;
+    scores.push(pt);
+    $('#pdots').children[r].className = pt>=75?'ok':pt>0?'mid':'ng';
+    msg(pt===100?'완벽한 음정!':pt>=75?'좋아요!':pt>0?`조금 ${pos<target?'낮아요':'높아요'}`:`많이 ${pos<target?'낮아요':'높아요'}`);
+    tone(pitchFreq(pos), 0.35, 'triangle', 0.18); later(()=>tone(pitchFreq(target), 0.35, 'triangle', 0.18), 380);
+    r++;
+    later(()=> r < ROUNDS ? round() : finish(scores.reduce((a,b)=>a+b,0)/ROUNDS), 1300);
+  };
+  later(round, 600);
+}
+
+// ② 박자 감각: 가이드 4박 뒤, 소리 없는 4박에 맞춰 터치 (3라운드, 템포가 빨라짐)
+function miniCount({ stage, msg, later, finish, cleanups }){
+  stage.innerHTML = `<div class="beats" id="beats">${'<i></i>'.repeat(8)}</div><p class="mg-dev num" id="dev">&nbsp;</p>
+    <button class="mg-pad" id="cTap" aria-label="터치">TAP</button>`;
+  const BPMS = [100, 115, 130], scores = [];
+  let r = 0, taps = [], expect = [], listening = false;
+  const dots = () => [...$('#beats').children];
+  const round = () => {
+    const a = ac(), P = 60/BPMS[r], t0 = a.currentTime + 0.8, lat = a.outputLatency || a.baseLatency || 0;
+    // 스피커 출력 지연(lat)만큼 기대 시점을 늦춤
+    taps = []; expect = [4,5,6,7].map(i=>t0+i*P+lat); listening = true;
+    dots().forEach(d=>d.className='');
+    msg(`라운드 ${r+1}/3 · ${BPMS[r]} BPM · 가이드 4박을 듣고, 이어지는 4박에 터치!`);
+    for (let i=0;i<4;i++){ tone(i===0?1800:1300, 0.06, 'square', 0.12, t0+i*P); later(()=>{ dots()[i].className='on'; }, (t0-a.currentTime+i*P)*1000); }
+    later(()=>{ msg('지금부터 소리 없이 4박! 마음속으로 세면서 터치'); }, (t0-a.currentTime+3.5*P)*1000);
+    later(()=>{
+      listening = false;
+      const devs = expect.map(e=>{ const near = taps.reduce((b,t)=> b===null || Math.abs(t-e)<Math.abs(b-e) ? t : b, null); return near===null || Math.abs(near-e)>0.3 ? null : (near-e)*1000; });
+      const pts = devs.map(v=> v===null ? 0 : Math.abs(v)<=50 ? 100 : Math.abs(v)<=100 ? 70 : Math.abs(v)<=170 ? 40 : 10);
+      const extra = Math.max(0, taps.length-4)*10;
+      scores.push(Math.max(0, pts.reduce((a,b)=>a+b,0)/4 - extra));
+      devs.forEach((v,i)=>{ dots()[4+i].className = v===null?'ng':Math.abs(v)<=100?'ok':'mid'; });
+      $('#dev').textContent = devs.map((v,i)=>`${i+5}박 ${v===null?'놓침':(v>0?'+':'')+Math.round(v)+'ms'}`).join(' · ');
+      r++;
+      later(()=> r < 3 ? round() : finish(scores.reduce((a,b)=>a+b,0)/3), 1800);
+    }, (t0-a.currentTime+8*P+0.35)*1000);
+  };
+  const onTap = e => { e.preventDefault(); if (!listening) return; const a = ac(); taps.push(a.currentTime); tone(900, 0.05, 'sine', 0.1);
+    const i = 4 + Math.min(3, taps.length-1); const d = dots()[i]; if (d) d.className = 'tap'; };
+  $('#cTap').addEventListener('pointerdown', onTap);
+  const key = e => { if (e.code==='Space') onTap(e); }; addEventListener('keydown', key); cleanups.push(()=>removeEventListener('keydown', key));
+  later(round, 700);
+}
+
+// ③ 멜로디 기억: 도·미·솔·도 버튼이 들려주는 멜로디를 따라 누르기 (3음부터 7음까지)
+function miniMelody({ stage, msg, later, finish }){
+  const NOTES = [{n:'도',f:261.63},{n:'미',f:329.63},{n:'솔',f:392.0},{n:'높은 도',f:523.25}];
+  const COLORS = Object.values(LANE_COLOR);
+  stage.innerHTML = `<div class="pads">${NOTES.map((x,i)=>`<button class="pad" data-i="${i}" style="--pc:${COLORS[i]}" disabled>${x.n}</button>`).join('')}</div>
+    <div class="mg-dots" id="mdots">${'<i></i>'.repeat(5)}</div>`;
+  const pads = [...stage.querySelectorAll('.pad')];
+  const flash = i => { tone(NOTES[i].f, 0.32, 'triangle', 0.22); pads[i].classList.add('lit'); setTimeout(()=>pads[i].classList.remove('lit'), 260); };
+  let seq = [rnd(0,3), rnd(0,3)], step = 0, round = 0, input = false;
+  const play = () => {
+    seq.push(rnd(0,3)); step = 0; input = false; pads.forEach(p=>p.disabled = true);
+    msg(`라운드 ${round+1}/5 · ${seq.length}음 멜로디를 잘 들어보세요`);
+    const gap = Math.max(380, 560 - round*40);
+    seq.forEach((v,i)=> later(()=>flash(v), 500 + i*gap));
+    later(()=>{ input = true; pads.forEach(p=>p.disabled = false); msg('이제 따라 누르세요!'); }, 500 + seq.length*gap);
+  };
+  pads.forEach(p=>p.addEventListener('pointerdown', e=>{
+    e.preventDefault(); if (!input) return;
+    const i = +p.dataset.i; flash(i);
+    if (i !== seq[step]){ input = false; pads.forEach(x=>x.disabled=true); $('#mdots').children[round].className='ng';
+      msg(`아쉬워요! 정답은 ${seq.map(v=>NOTES[v].n).join(' · ')}`); later(()=>finish(round*20), 1500); return; }
+    step++;
+    if (step === seq.length){ input = false; $('#mdots').children[round].className='ok'; round++;
+      if (round === 5){ msg('완벽하게 기억했어요!'); later(()=>finish(100), 1000); }
+      else { msg('좋아요! 한 음 더 늘어나요'); later(play, 1100); } }
+  }));
+  later(play, 600);
 }
 
 /* ───── 무대 (데뷔 / 컴백) ───── */
