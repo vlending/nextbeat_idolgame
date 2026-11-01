@@ -111,7 +111,7 @@ button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
 .row-btns{display:flex;gap:10px;margin-top:18px}
 
 /* 타이틀 */
-.title{min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:22px;padding-block:32px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));background:var(--stage);color:var(--stage-ink);position:relative;overflow:hidden}
+.title{flex:1;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:22px;padding-block:32px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));background:var(--stage);color:var(--stage-ink);position:relative;overflow:hidden}
 .title::before{content:"";position:absolute;left:50%;top:-30%;width:140%;height:120%;transform:translateX(-50%);background:conic-gradient(from 160deg at 50% 0%,transparent 0 10deg,rgba(255,255,255,.07) 10deg 22deg,transparent 22deg 34deg,rgba(255,79,139,.12) 34deg 44deg,transparent 44deg);pointer-events:none}
 .title h1{font-family:var(--f-display);font-weight:400;font-size:44px;line-height:1.05;margin:0;position:relative}
 .title h1 em{font-style:normal;color:var(--accent)}
@@ -130,32 +130,32 @@ button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
 <script>
 (() => {
 'use strict';
-const SAVE_KEY = 'nextbeat-idol-save-v1';
+const SAVE_KEY = 'nextbeat-idol-save-v2';
 const LAST_MONTH = 24;
 const LIVING_COST = 30; // 만원 / 월
 
-/* ───── 멤버 4명 ───── */
+/* ───── 멤버 4명 (NEXT BEAT 캐릭터 설계 기준) ───── */
 const MEMBERS = [
-  { id:'seoyun', name:'한서윤', age:20, role:'리더 · 메인보컬', trait:'보컬 레슨 효과 1.3배',
-    boost:{vocal:1.3}, base:{vocal:28,dance:14,charm:18},
-    hair:'#3B2A33', style:'long', outfit:'#7C6CF2', tint:'#E4E0FF', eye:'#3B2A33', acc:'pin',
-    lines:{ hi:['오늘 고음 한 번에 올라갔어! 들었어?','멤버들 다 잘 챙길게. 걱정 마.','데뷔하면 첫 무대에서 꼭 라이브로 부를 거야.'],
-            low:['목이 좀 잠겼어… 오늘은 따뜻한 차 마실래.','리더라서 티를 못 내겠어. 조금 지쳤나 봐.'] } },
-  { id:'harin', name:'강하린', age:19, role:'메인댄서', trait:'댄스 레슨 효과 1.3배',
-    boost:{dance:1.3}, base:{vocal:14,dance:28,charm:17},
-    hair:'#E08AA6', style:'bob', outfit:'#FF8A3D', tint:'#FFE6D6', eye:'#4A2B36', acc:'none',
-    lines:{ hi:['안무 하나 더 짜봤어. 킬링 파트 보여줄까?','거울 앞에 서면 시간 가는 줄 몰라!','연습실 불 끄는 건 항상 내 담당이야.'],
-            low:['발목이 좀 시큰해… 오늘은 스트레칭만 할래.','다리가 내 말을 안 들어. 하루만 쉬자.'] } },
-  { id:'chaea', name:'윤채아', age:18, role:'비주얼 · 센터', trait:'연기·화보 수업 효과 1.3배',
-    boost:{charm:1.3}, base:{vocal:17,dance:15,charm:28},
-    hair:'#D9A55B', style:'wavy', outfit:'#FF4F8B', tint:'#FFE0EC', eye:'#5A3A20', acc:'ribbon',
-    lines:{ hi:['카메라 앞에서 덜 떨게 됐어. 칭찬해줘!','팬분들한테 손편지 쓰는 중이야.','오늘 표정 연기 연습 100번 했어.'],
-            low:['요즘 잠을 못 자서 얼굴이 부었어…','사진 찍기 싫은 날도 있잖아. 오늘이 그래.'] } },
-  { id:'jiwoo', name:'오지우', age:16, role:'래퍼 · 막내', trait:'모든 수업 효과 1.1배 (빠른 성장)',
-    boost:{vocal:1.1,dance:1.1,charm:1.1}, base:{vocal:19,dance:19,charm:19},
-    hair:'#2C3566', style:'buns', outfit:'#25B99A', tint:'#D8F5EE', eye:'#1F2140', acc:'star',
-    lines:{ hi:['언니들 저 랩 가사 새로 썼어요! 들어보실래요?','막내라고 봐주지 마세요. 저도 할 수 있어요!','오늘 급식에 떡볶이 나왔어요. 최고!'],
-            low:['학교랑 연습 같이 하니까 너무 졸려요…','오늘은 그냥 누워서 아무것도 안 하고 싶어요.'] } },
+  { id:'dorin', name:'도린', age:19, role:'메인댄서 · 래퍼', vibe:'차가운 에이스',
+    trait:'댄스 레슨 효과 1.3배', boost:{dance:1.3}, base:{vocal:14,dance:28,charm:16},
+    hair:'#1C1A22', inner:'#FF5FA2', iris:'#4B2A7A', outfit:'#2A2A30', collar:'#B8BCC8', tint:'#E4E1F0',
+    lines:{ hi:['…방금 그 동작, 한 번 더 맞춰볼게요.','말보다 무대로 보여드릴게요.','먼저 들어가세요. 저는 한 시간만 더 하고 갈게요.'],
+            low:['괜찮아요. …라고 하고 싶은데, 오늘은 좀 무리예요.','다리가 무거워요. 하루만 쉴게요.'] } },
+  { id:'garam', name:'가람', age:18, role:'래퍼 · 서브보컬', vibe:'밝은 아이돌',
+    trait:'연기·화보 수업 효과 1.3배', boost:{charm:1.3}, base:{vocal:18,dance:16,charm:27},
+    hair:'#B9874A', tie:'#0F6E6E', iris:'#1FB5B8', outfit:'#FFE45C', collar:'#0F6E6E', tint:'#FFF4C2',
+    lines:{ hi:['대표님! 오늘 랩 녹음 한 번에 끝났어요! 대박이죠?','다들 표정이 어두워서 제가 간식 쏘기로 했어요!','팬 사인회 하면 제가 제일 오래 이야기할 거예요!'],
+            low:['…아, 아니에요. 그냥 좀 조용히 있고 싶었어요.','오늘은 웃는 게 잘 안 되네요. 잠깐만 혼자 있을게요.'] } },
+  { id:'seon', name:'세온', age:17, role:'메인보컬', vibe:'따뜻하고 안정적인 보컬',
+    trait:'보컬 레슨 효과 1.3배', boost:{vocal:1.3}, base:{vocal:28,dance:14,charm:18},
+    hair:'#5A3442', iris:'#8E3B55', outfit:'#C98B95', collar:'#F6EEDF', tint:'#F6E1E4',
+    lines:{ hi:['오늘은 목이 잘 풀렸어요. 한 곡 들려드릴까요?','다 같이 화음 맞출 때가 제일 행복해요.','노래할 때만큼은 떨리지 않아요. 믿어주세요.'],
+            low:['목을 좀 아껴야 할 것 같아요. 따뜻한 차 마실게요.','조금 지쳤어요. 다들 걱정할까 봐 말 못 했어요.'] } },
+  { id:'rie', name:'리에', age:16, role:'서브보컬 · 막내', vibe:'관찰형 막내',
+    trait:'모든 수업 효과 1.1배 (빠른 성장)', boost:{vocal:1.1,dance:1.1,charm:1.1}, base:{vocal:19,dance:19,charm:19},
+    hair:'#121420', tie:'#D9CCF2', iris:'#C7D85B', outfit:'#CFC3EE', collar:'#FFFFFF', tint:'#EEF3D2',
+    lines:{ hi:['도린 언니 2절 동선, 반 박자 늦어요. …제가 말했다고 하지 마세요.','대표님, 오늘 회의 자료에 오타 있었어요.','…다들 잘하고 있어요. 제가 보고 있었어요.'],
+            low:['…졸려요. 오늘은 구석에서 조용히 쉴래요.','머리가 복잡해요. 조금만 혼자 있을게요.'] } },
 ];
 const BY_ID = Object.fromEntries(MEMBERS.map(m => [m.id, m]));
 
@@ -186,8 +186,8 @@ const EVENTS = [
   { id:'aircon', when:s=>true, title:'연습실 에어컨 고장', text:'한여름 같은 연습실. 수리 기사님을 부를까요?',
     a:{ label:'바로 수리 (30만원)', run:s=>{ s.money-=30; return '자금 -30만원'; } },
     b:{ label:'선풍기로 버티기', run:s=>{ allCond(s,-12); return '모두 컨디션 -12'; } } },
-  { id:'fight', when:s=>true, title:'멤버 간 작은 다툼', text:'안무 동선 문제로 하린과 지우가 언성을 높였어요.',
-    a:{ label:'리더 서윤에게 맡기기', run:s=>{ mem(s,'seoyun').bond=clamp(mem(s,'seoyun').bond+10); mem(s,'seoyun').cond=clamp(mem(s,'seoyun').cond-10); return '서윤 호감도 +10, 컨디션 -10'; } },
+  { id:'fight', when:s=>true, title:'멤버 간 작은 다툼', text:'안무 동선 문제로 도린과 가람이 언성을 높였어요.',
+    a:{ label:'세온에게 중재 맡기기', run:s=>{ mem(s,'seon').bond=clamp(mem(s,'seon').bond+10); mem(s,'seon').cond=clamp(mem(s,'seon').cond-10); return '세온 호감도 +10, 컨디션 -10'; } },
     b:{ label:'다 같이 회식 (20만원)', run:s=>{ s.money-=20; allCond(s,12); s.members.forEach(m=>m.bond=clamp(m.bond+3)); return '자금 -20만원, 모두 컨디션 +12 · 호감도 +3'; } } },
   { id:'busk', when:s=>true, title:'길거리 버스킹 제안', text:'홍대 앞 버스킹 자리가 하나 비었대요.',
     a:{ label:'나가서 노래하기', run:s=>{ s.members.forEach(m=>{m.vocal=clamp(m.vocal+2);m.cond=clamp(m.cond-6);}); const f=addFans(s,200+Math.round(s.fans*0.02)); return `모두 보컬 +2, 팬 +${fmt(f)}`; } },
@@ -196,8 +196,8 @@ const EVENTS = [
     a:{ label:'구매 (80만원)', run:s=>{ s.money-=80; s.songBonus=50; return "다음 무대 점수 +50"; } },
     b:{ label:'아쉽지만 패스', run:s=>'변화 없음' } },
   { id:'variety', when:s=>s.debuted, title:'예능 프로그램 섭외', text:'주말 예능에서 멤버 한 명을 찾고 있어요.',
-    a:{ label:'채아 출연', run:s=>{ const m=mem(s,'chaea'); m.charm=clamp(m.charm+3); m.cond=clamp(m.cond-10); const f=addFans(s,400+Math.round(s.fans*0.06)); return `채아 매력 +3, 팬 +${fmt(f)}`; } },
-    b:{ label:'지우 출연', run:s=>{ const m=mem(s,'jiwoo'); m.charm=clamp(m.charm+4); m.cond=clamp(m.cond-10); const f=addFans(s,250+Math.round(s.fans*0.05)); return `지우 매력 +4, 팬 +${fmt(f)}`; } } },
+    a:{ label:'가람 출연', run:s=>{ const m=mem(s,'garam'); m.charm=clamp(m.charm+3); m.cond=clamp(m.cond-10); const f=addFans(s,400+Math.round(s.fans*0.06)); return `가람 매력 +3, 팬 +${fmt(f)}`; } },
+    b:{ label:'리에 출연', run:s=>{ const m=mem(s,'rie'); m.charm=clamp(m.charm+4); m.cond=clamp(m.cond-10); const f=addFans(s,250+Math.round(s.fans*0.05)); return `리에 매력 +4, 팬 +${fmt(f)}`; } } },
   { id:'rumor', when:s=>s.debuted && s.fans>1000, title:'근거 없는 루머', text:'커뮤니티에 사실이 아닌 글이 퍼지고 있어요.',
     a:{ label:'공식 대응 (40만원)', run:s=>{ s.money-=40; return '자금 -40만원. 루머가 금방 잠잠해졌어요'; } },
     b:{ label:'무시하기', run:s=>{ if(Math.random()<0.5){ const lost=Math.round(s.fans*0.08); s.fans-=lost; return `팬 -${fmt(lost)}`; } return '다행히 금방 잊혔어요'; } } },
@@ -224,48 +224,90 @@ const periodText = mo => `${Math.ceil(mo/12)}년차 ${((mo-1)%12)+1}월`;
 const esc = t => String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ───── 캐릭터 그림 (SVG) ───── */
+const SKIN = '#FFE3D3';
+// 눈: 홍채 색 + 동공 + 하이라이트 + 윗눈매(기울기로 눈꼬리 표현)
+function eyePair(cfg, iris){
+  const { y, rx, ry, tilt, gap } = cfg;
+  let out = '';
+  for (const side of [-1, 1]){
+    const cx = 50 + side*gap;
+    const ox = cx + side*(rx+1.5), ix = cx - side*(rx+0.5);
+    out += `<ellipse cx="${cx}" cy="${y}" rx="${rx}" ry="${ry}" fill="${iris}"/>
+      <ellipse cx="${cx}" cy="${y+ry*0.15}" rx="${rx*0.5}" ry="${ry*0.55}" fill="#1A1424"/>
+      <circle cx="${cx+1.4}" cy="${y-ry*0.35}" r="${Math.min(rx,ry)*0.33}" fill="#fff"/>
+      <path d="M${ix} ${y-ry+0.6} Q${cx} ${y-ry-1.6} ${ox} ${y-ry+0.6-tilt}" stroke="#1A1424" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  }
+  return out;
+}
+const LOOKS = {
+  // 도린: 짧고 각진 타원 얼굴, 작고 가로로 긴 눈, 흑발+핑크 이너 보브, 묵직한 풀뱅, 한쪽 긴 페이스 프레이밍
+  dorin: m => ({
+    face:'M25 44 Q25 22 50 22 Q75 22 75 44 Q75 62 64 71 Q50 77 36 71 Q25 62 25 44 Z',
+    eyes:{ y:52, rx:5.4, ry:3.2, tilt:0.6, gap:11 },
+    back:`<path d="M19 48 Q18 14 50 14 Q82 14 81 48 L81 72 Q66 80 50 78 Q34 80 19 72 Z" fill="${m.hair}"/>
+          <path d="M19 58 L19 72 Q25 77 33 77 Q25 70 24 56 Z M81 58 L81 72 Q75 77 67 77 Q75 70 76 56 Z" fill="${m.inner}"/>`,
+    front:`<path d="M23 46 Q22 17 50 17 Q78 17 77 46 Q77 44 74 44 L26 44 Q23 44 23 46 Z" fill="${m.hair}"/>
+           <path d="M72 38 Q81 60 77 98 Q73 100 71 94 Q74 66 67 44 Z" fill="${m.hair}"/>
+           <path d="M76 70 Q77 84 75 96" stroke="${m.inner}" stroke-width="2" fill="none"/>`,
+    mouth:{ happy:'<path d="M45 64 q5 3 10 0" stroke="#A04A60" stroke-width="2" fill="none" stroke-linecap="round"/>',
+            normal:'<path d="M46 64 h8" stroke="#A04A60" stroke-width="1.8" stroke-linecap="round"/>' },
+  }),
+  // 가람: 하트형 얼굴, 크고 또렷한 눈, 캐러멜 골드 브라운 반묶음 포니테일 + 딥틸 헤어타이
+  garam: m => ({
+    face:'M24 44 Q24 21 50 21 Q76 21 76 44 Q76 60 66 69 Q57 76 50 76 Q43 76 34 69 Q24 60 24 44 Z',
+    eyes:{ y:51, rx:5.2, ry:6.8, tilt:-0.4, gap:11 },
+    back:`<path d="M50 14 Q58 2 70 6 Q64 10 60 18 Z" fill="${m.hair}"/>
+          <path d="M56 8 Q66 -2 72 10 Q68 18 62 16 Z" fill="${m.hair}"/>
+          <path d="M20 46 Q19 14 50 14 Q81 14 80 46 Q86 62 80 76 Q84 86 74 92 Q50 98 26 92 Q16 86 20 76 Q14 62 20 46 Z" fill="${m.hair}"/>`,
+    front:`<rect x="52" y="10" width="7" height="5" rx="2" fill="${m.tie}" transform="rotate(-25 55 12)"/>
+           <path d="M24 46 Q24 19 50 19 Q76 19 76 46 Q72 32 60 28 Q52 36 40 34 Q30 38 24 46 Z" fill="${m.hair}"/>
+           <path d="M24 42 Q18 58 24 70 Q28 60 28 48 Z M76 42 Q82 58 76 70 Q72 60 72 48 Z" fill="${m.hair}"/>`,
+    mouth:{ happy:'<path d="M43 61 q7 9 14 0 Z" fill="#B5546A"/>', normal:'<path d="M44 62 q6 5 12 0" stroke="#B5546A" stroke-width="2.2" fill="none" stroke-linecap="round"/>' },
+  }),
+  // 세온: 세로로 긴 부드러운 타원, 눈꼬리가 살짝 내려간 눈, 플럼 브라운 노뱅 장발(6:4 사이드 파트)
+  seon: m => ({
+    face:'M26 46 Q26 20 50 20 Q74 20 74 46 Q74 66 62 75 Q50 80 38 75 Q26 66 26 46 Z',
+    eyes:{ y:52, rx:4.6, ry:5.2, tilt:-1.6, gap:10.5 },
+    back:`<path d="M21 46 Q20 13 52 13 Q81 14 79 46 L82 108 L18 108 Z" fill="${m.hair}"/>`,
+    front:`<path d="M58 17 Q30 16 24 50 Q26 70 22 90 L19 90 Q18 60 22 40 Q28 18 58 17 Z" fill="${m.hair}"/>
+           <path d="M58 17 Q40 22 30 44 Q28 30 40 20 Z" fill="${m.hair}"/>
+           <path d="M58 17 Q76 19 77 44 L80 90 L77 90 Q74 60 74 46 Q70 28 58 17 Z" fill="${m.hair}"/>`,
+    mouth:{ happy:'<path d="M45 63 q5 5 10 0 Z" fill="#A8475E"/>', normal:'<path d="M45.5 64 q4.5 2.5 9 0" stroke="#A8475E" stroke-width="2" fill="none" stroke-linecap="round"/>' },
+  }),
+  // 리에: 작고 짧은 역삼각형 얼굴, 안쪽이 둥글고 바깥쪽이 올라간 작은 눈, 잉크 블랙 하이 포니테일 + 풀뱅 + 양쪽 페이스 프레이밍
+  rie: m => ({
+    face:'M28 46 Q28 26 50 26 Q72 26 72 46 Q71 59 60 68 Q50 74 40 68 Q29 59 28 46 Z',
+    eyes:{ y:52, rx:4.2, ry:4.4, tilt:0.8, gap:9.5 },
+    back:`<path d="M58 14 Q84 0 90 26 Q93 52 82 74 Q80 50 74 34 Q68 22 58 22 Z" fill="${m.hair}"/>
+          <path d="M24 50 Q22 19 50 19 Q78 19 76 50 Z" fill="${m.hair}"/>`,
+    front:`<path d="M62 12 l-6 -6 l-2 10 Z M62 12 l8 -4 l-2 10 Z" fill="${m.tie}"/><circle cx="62" cy="12" r="2.4" fill="#A996D6"/>
+           <path d="M26 46 Q26 22 50 22 Q74 22 74 46 L70 41 L66 44 L62 40 L58 44 L54 40 L50 44 L46 40 L42 44 L38 40 L34 44 L30 41 Z" fill="${m.hair}"/>
+           <path d="M27 42 Q22 58 27 74 Q30 62 31 46 Z M73 42 Q78 58 73 74 Q70 62 69 46 Z" fill="${m.hair}"/>
+           <path d="M27 33 l8 4 M27 37 l8 -4" stroke="#C7D85B" stroke-width="1.8" stroke-linecap="round"/>`,
+    mouth:{ happy:'<path d="M46.5 61 q3.5 4.5 7 0 Z" fill="#B5546A"/>', normal:'<path d="M47 62 q3 2 6 0" stroke="#B5546A" stroke-width="1.8" fill="none" stroke-linecap="round"/>' },
+  }),
+};
 function avatar(id, mood){
-  const m = BY_ID[id];
-  const h = m.hair;
-  const back = {
-    long:`<path d="M21 46 Q20 15 50 15 Q80 15 79 46 L82 96 Q66 102 50 100 Q34 102 18 96 Z" fill="${h}"/>`,
-    bob:`<path d="M20 48 Q19 15 50 15 Q81 15 80 48 L81 70 Q66 76 50 74 Q34 76 19 70 Z" fill="${h}"/>`,
-    wavy:`<path d="M21 46 Q20 15 50 15 Q80 15 79 46 Q86 58 79 68 Q86 80 76 90 Q64 96 50 94 Q36 96 24 90 Q14 80 21 68 Q14 58 21 46 Z" fill="${h}"/>`,
-    buns:`<circle cx="25" cy="22" r="11" fill="${h}"/><circle cx="75" cy="22" r="11" fill="${h}"/><path d="M22 48 Q21 17 50 17 Q79 17 78 48 L78 62 Q50 68 22 62 Z" fill="${h}"/>`,
-  }[m.style];
-  const bangs = {
-    long:`<path d="M24 46 Q24 19 50 19 Q76 19 76 46 Q70 33 56 30 Q50 38 38 37 Q30 40 24 46 Z" fill="${h}"/>`,
-    bob:`<path d="M23 44 Q23 18 50 18 Q77 18 77 44 L72 37 L66 41 L60 36 L54 41 L48 36 L42 41 L36 36 L30 41 Z" fill="${h}"/>`,
-    wavy:`<path d="M24 46 Q24 19 50 19 Q76 19 76 46 Q66 30 48 31 Q42 40 24 46 Z" fill="${h}"/>`,
-    buns:`<path d="M24 44 Q24 20 50 20 Q76 20 76 44 Q70 34 62 33 L58 38 L52 32 Q40 34 33 38 Q28 40 24 44 Z" fill="${h}"/>`,
-  }[m.style];
-  const acc = {
-    pin:`<path d="M66 28 l6 -6 M64 24 l8 2" stroke="${m.outfit}" stroke-width="3" stroke-linecap="round"/>`,
-    ribbon:`<path d="M30 22 l-9 -6 l1 12 Z M30 22 l9 -6 l-1 12 Z" fill="#FF4F8B"/><circle cx="30" cy="22" r="2.6" fill="#C93268"/>`,
-    star:`<path d="M71 31 l2 4.5 l5 .5 l-3.8 3.2 l1.2 4.8 l-4.4 -2.6 l-4.4 2.6 l1.2 -4.8 l-3.8 -3.2 l5 -.5 Z" fill="#FFB938"/>`,
-    none:'',
-  }[m.acc];
-  let eyes, mouth, extra='';
-  if (mood==='tired'){
-    eyes = `<path d="M35 51 q5 3 10 0 M55 51 q5 3 10 0" stroke="${m.eye}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
-    mouth = `<path d="M46 64 q4 -2 8 0" stroke="#B5546A" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-    extra = `<path d="M74 40 q3 5 0 8 q-3 -3 0 -8 Z" fill="#8FC9F5"/>`;
+  const m = BY_ID[id], L = LOOKS[id](m), e = L.eyes;
+  let eyes, mouth, extra = '';
+  if (mood === 'tired'){
+    eyes = [-1,1].map(sd=>{ const cx=50+sd*e.gap; return `<path d="M${cx-e.rx} ${e.y} q${e.rx} 3 ${e.rx*2} 0" stroke="#1A1424" stroke-width="2.2" fill="none" stroke-linecap="round"/>`; }).join('');
+    mouth = `<path d="M46 65 q4 -2 8 0" stroke="#A04A60" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    extra = `<path d="M70 40 q3 5 0 8 q-3 -3 0 -8 Z" fill="#8FC9F5"/>`;
   } else {
-    eyes = `<ellipse cx="40" cy="51" rx="4.6" ry="5.8" fill="${m.eye}"/><ellipse cx="60" cy="51" rx="4.6" ry="5.8" fill="${m.eye}"/>
-            <circle cx="41.6" cy="49" r="1.7" fill="#fff"/><circle cx="61.6" cy="49" r="1.7" fill="#fff"/>`;
-    mouth = mood==='happy'
-      ? `<path d="M44 61 q6 7 12 0 Z" fill="#B5546A"/>`
-      : `<path d="M45 62 q5 4 10 0" stroke="#B5546A" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+    eyes = eyePair(e, m.iris);
+    mouth = L.mouth[mood === 'happy' ? 'happy' : 'normal'];
   }
   return `<svg viewBox="0 0 100 110" role="img" aria-label="${m.name}">
-    ${back}
-    <path d="M24 110 Q24 84 50 84 Q76 84 76 110 Z" fill="${m.outfit}"/>
-    <path d="M42 84 L50 94 L58 84" fill="#fff" opacity=".85"/>
-    <rect x="44" y="72" width="12" height="13" rx="4" fill="#FFE3D3"/>
-    <ellipse cx="50" cy="50" rx="25" ry="26" fill="#FFE3D3"/>
-    ${bangs}${acc}${eyes}
-    <ellipse cx="33" cy="60" rx="5" ry="2.8" fill="#FFB3C1" opacity=".8"/>
-    <ellipse cx="67" cy="60" rx="5" ry="2.8" fill="#FFB3C1" opacity=".8"/>
+    ${L.back}
+    <path d="M25 110 Q25 85 50 85 Q75 85 75 110 Z" fill="${m.outfit}"/>
+    <path d="M42 85 L50 95 L58 85" fill="${m.collar}"/>
+    <rect x="44.5" y="68" width="11" height="18" rx="4" fill="${SKIN}"/>
+    <path d="${L.face}" fill="${SKIN}"/>
+    ${eyes}
+    <ellipse cx="${50-e.gap-3}" cy="61" rx="4.5" ry="2.4" fill="#FFB3C1" opacity="${id==='dorin'?.45:.8}"/>
+    <ellipse cx="${50+e.gap+3}" cy="61" rx="4.5" ry="2.4" fill="#FFB3C1" opacity="${id==='dorin'?.45:.8}"/>
+    ${L.front}
     ${mouth}${extra}
   </svg>`;
 }
@@ -381,7 +423,7 @@ function openMember(id){
       <div class="av">${avatar(id, moodOf(m))}</div>
       <div>
         <h2>${d.name} <span style="font-size:14px;color:var(--sub)">${d.age}세</span></h2>
-        <div class="role" style="margin-bottom:8px">${d.role} · ${d.trait}</div>
+        <div class="role" style="margin-bottom:8px">${d.role} · ${d.vibe}<br>${d.trait}</div>
         <div class="bars">${bar('vocal',m.vocal)}${bar('dance',m.dance)}${bar('charm',m.charm)}${bar('cond',m.cond,'컨디')}</div>
       </div>
     </div>
