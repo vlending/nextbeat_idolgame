@@ -204,6 +204,12 @@ button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
 .true-end{text-align:center;padding:18px;border-radius:16px;background:linear-gradient(135deg,rgba(255,79,139,.3),rgba(124,108,242,.3))}
 .true-end p{letter-spacing:.2em;font-size:12px;color:var(--gold);font-weight:800}
 .true-end h2{font-family:var(--f-display);font-weight:400;font-size:28px;margin:4px 0}.true-end span{font-size:13px;opacity:.85}
+.alog{margin:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:8px 12px;font-size:12px;color:var(--sub);display:grid;gap:2px}
+.alog p{margin:0;line-height:1.45}
+.alog b{color:var(--ink);font-size:12px}.alog.run{border-style:solid;border-color:var(--accent)}
+.alog.run b::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:6px;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+.tools .tool{padding:9px 8px}
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--stage-ink);padding:10px 16px;border-radius:12px;z-index:40;font-size:13px;animation:up .2s;max-width:calc(100% - 32px)}
 </style>
 
@@ -390,6 +396,7 @@ const ENDINGS = {
 };
 const endingType = m => (m.ep>=3 && m.good>=2) ? 't' : (m.ep>=2 || m.bond>=50) ? 'n' : 'b';
 
+function checkStoryPending(){ return S.members.some(m => (m.ep||0) < 3 && m.bond >= STORIES[m.id][m.ep||0].need); }
 function checkStory(){
   const c = S.members.filter(m => (m.ep||0) < 3 && m.bond >= STORIES[m.id][m.ep||0].need).sort((a,b)=>b.bond-a.bond)[0];
   if (c) openStory(c);
@@ -411,8 +418,131 @@ function openStory(m){
     save();
     $('#stc').innerHTML = `<div class="story">${ch.lines.map(storyLine).join('')}</div><p class="result">${msg}</p>${unlock}
       <div class="row-btns"><button class="btn" id="stOk">계속</button></div>`;
-    $('#stOk').onclick = () => { closeSheet(); renderMain(); };
+    $('#stOk').onclick = () => { closeSheet(); renderMain(); if (S.auto.resume){ if (checkStoryPending()) checkStory(); else { S.auto.resume = false; startAuto(); } } };
   });
+}
+
+/* ───── 자동 운영 ───── */
+const STYLES = {
+  growth: { name:'실력 우선', desc:'레슨 위주로 키우고, 시설 투자를 먼저 해요.', rest:35, reserve:150,
+            fac:['studio','mirror','stylist','lounge','pr'], prep:['song','outfit','mv'] },
+  fandom: { name:'팬덤 우선', desc:'데뷔 후 SNS·행사로 팬과 수익을 늘리고, 홍보팀과 대작 뮤비에 투자해요.', rest:35, reserve:150,
+            fac:['pr','stylist','lounge','studio','mirror'], prep:['mvbig','song','outfit','mv'] },
+  safe:   { name:'안정 운영', desc:'컨디션을 높게 유지하고 돈을 아껴요. 무리하지 않아요.', rest:55, reserve:350,
+            fac:['lounge'], prep:['outfit','mv'] },
+  balance:{ name:'균형', desc:'멤버마다 약한 능력치를 채우며 고르게 키워요.', rest:45, reserve:200,
+            fac:['lounge','studio','mirror','stylist','pr'], prep:['song','mv','outfit'] },
+};
+const MAIN_STAT = { dorin:'dance', garam:'charm', seon:'vocal', rie:null };
+// 사건별 자동 선택 (스타일별 예외, 없으면 _ , 그것도 없으면 a)
+const AUTO_EV = { snack:{ fandom:'b' }, fight:{ _:'b', growth:'a' }, busk:{ safe:'b' }, demo:{ safe:'b' }, cf:{ safe:'b' } };
+let autoTimer = null, autoRunning = false;
+
+function weakest(m){ return ['vocal','dance','charm'].sort((a,b)=>m[a]-m[b])[0]; }
+function autoPlan(s){
+  const st = STYLES[s.auto.style];
+  // 매니저가 대신 안부를 챙김 (대표님이 직접 대화하는 것보다 효과가 작음)
+  for (const m of s.members) if (!m.chatted){ m.chatted = true; m.bond = clamp(m.bond+2); }
+  // 일정
+  let budget = s.money - LIVING_COST;
+  const ranked = s.members.slice().sort((a,b)=>b.charm-a.charm);
+  for (const m of s.members){
+    let k;
+    if (m.cond < st.rest) k = 'rest';
+    else if (s.auto.style==='fandom' && s.debuted && m.id===ranked[0].id) k = 'sns';
+    else if (s.auto.style==='fandom' && s.debuted && m.id===ranked[1].id) k = 'work';
+    else if (s.auto.style==='balance') k = weakest(m);
+    else k = MAIN_STAT[m.id] || weakest(m);
+    if (SCHED[k].cost && (budget < SCHED[k].cost || (s.auto.style==='safe' && budget < st.reserve))) k = 'work';
+    if (SCHED[k].cost) budget -= SCHED[k].cost;
+    m.sched = k;
+  }
+  // 시설 투자
+  for (const id of st.fac){
+    const f = FACILITIES.find(x=>x.id===id);
+    if (!s.fac[id] && !(f.needDebut && !s.debuted) && budget - f.cost >= st.reserve){ s.fac[id] = true; s.money -= f.cost; budget -= f.cost; autoLog(`투자: ${f.name}`); }
+  }
+}
+function autoPrep(s){
+  const st = STYLES[s.auto.style];
+  for (const id of st.prep){
+    const p = PREP.find(x=>x.id===id);
+    if (!s.prep[id] && !(p.excl && s.prep[p.excl]) && s.money - p.cost >= st.reserve){ s.prep[id] = true; s.money -= p.cost; autoLog(`무대 준비: ${p.name}`); }
+  }
+}
+function autoLog(t){ S.autoLog = [`${periodText(S.month)} · ${t}`, ...(S.autoLog||[])].slice(0,8); }
+function bestConcept(s){
+  return CONCEPTS.filter(c=>c.id!==s.lastConcept).sort((a,b)=>fitPct(b)-fitPct(a))[0];
+}
+function startAuto(){
+  if (!S || S.ended) return;
+  autoRunning = true; S.auto.on = true; save(); renderMain();
+  clearTimeout(autoTimer); autoTimer = setTimeout(autoStep, 400);
+}
+function stopAuto(msg){
+  const was = autoRunning;
+  autoRunning = false; clearTimeout(autoTimer);
+  if (S && S.auto) { S.auto.on = false; S.auto.resume = false; save(); }
+  if (was && S && !S.ended){ renderMain(); if (msg) toast(msg); }
+}
+function autoStep(){
+  if (!autoRunning) return;
+  if ($('#scrim') || document.querySelector('.rhythm')){ autoTimer = setTimeout(autoStep, 600); return; }
+  const s = S;
+  // 무대가 열려 있으면 먼저 무대
+  if (stageInfo(s).ok){
+    autoPrep(s); save();
+    const c = bestConcept(s);
+    if (s.auto.stage === 'auto'){
+      autoLog(`${s.debuted?'컴백':'데뷔'} 무대 · ${c.name} (자동)`);
+      perform(c.id, 0.55, { skipped:true, lanePer:[0,0,0,0] });   // 결과 창을 닫으면 자동 진행이 이어짐
+      autoTimer = setTimeout(autoStep, 600); return;
+    }
+    autoRunning = false; S.auto.on = false; save(); renderMain();
+    openSheet(`<h2>무대 준비 완료!</h2><p>${s.debuted?'컴백':'데뷔'} 무대를 열 수 있어요. 추천 컨셉은 <b>${c.name}</b>(적합도 ${fitPct(c)}%)이에요.</p>
+      <div class="row-btns"><button class="btn alt" id="aLater">나중에</button><button class="btn" id="aGo">무대 시작</button></div>`, true);
+    $('#aLater').onclick = () => { closeSheet(); };
+    $('#aGo').onclick = () => { closeSheet(); startRhythm(c, (acc,st)=>{ S.auto.resume = true; perform(c.id, acc, st); }); };
+    return;
+  }
+  autoPlan(s);
+  const r = simulateMonth();
+  if (!r){ stopAuto('자금이 부족해 자동 운영을 멈췄어요.'); return; }
+  const cnt = {}; s.members.forEach(m=>{ const n = schedName(m.sched||'rest'); cnt[n]=(cnt[n]||0)+1; });
+  let line = Object.entries(cnt).map(([k,v])=>`${k} ${v}`).join(', ');
+  if (r.ev){
+    const pref = AUTO_EV[r.ev.id] || {}; let ch = pref[s.auto.style] || pref._ || 'a';
+    if (r.ev.id==='demo' && s.money < 200) ch = 'b';
+    const msg = r.ev[ch].run(s); save();
+    line += ` · 사건 「${r.ev.title}」 → ${r.ev[ch].label}`;
+  }
+  autoLog(line);
+  if (!advanceMonth()) return;
+  if (S.members.some(m => (m.ep||0) < 3 && m.bond >= STORIES[m.id][m.ep||0].need)){ S.auto.resume = true; autoRunning = false; save(); checkStory(); return; }
+  autoTimer = setTimeout(autoStep, s.auto.fast ? 450 : 1100);
+}
+function openAuto(){
+  const a = S.auto;
+  openSheet(`<button class="x" data-close aria-label="닫기">×</button>
+    <h2>자동 운영</h2>
+    <p style="color:var(--sub);font-size:13px">운영 스타일을 고르면 매니저가 일정·투자·사건 선택을 매달 알아서 해요. 멤버 안부도 챙기지만, 대표님이 직접 대화할 때보다 호감도가 적게 올라요(+2, 직접 대화는 +5). 멤버 이야기가 열리면 잠시 멈추고 대표님의 선택을 기다려요.</p>
+    <h3>운영 스타일</h3>
+    <div class="opts one">${Object.entries(STYLES).map(([k,v])=>`<button class="opt ${a.style===k?'on':''}" data-st="${k}"><b>${v.name}</b><span>${v.desc}</span></button>`).join('')}</div>
+    <h3>무대</h3>
+    <div class="opts">
+      <button class="opt ${a.stage!=='auto'?'on':''}" data-sg="ask"><b>직접 하기</b><span>무대 때 멈추고 리듬게임을 직접 해요</span></button>
+      <button class="opt ${a.stage==='auto'?'on':''}" data-sg="auto"><b>자동</b><span>리듬게임 없이 진행해요 (퍼포먼스 보너스 없음)</span></button>
+    </div>
+    <h3>속도</h3>
+    <div class="opts">
+      <button class="opt ${!a.fast?'on':''}" data-sp="0"><b>보통</b><span>한 달에 약 1초</span></button>
+      <button class="opt ${a.fast?'on':''}" data-sp="1"><b>빠르게</b><span>한 달에 약 0.5초</span></button>
+    </div>
+    <div class="row-btns"><button class="btn" id="aStart">자동 운영 시작</button></div>`);
+  document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{ a.style=b.dataset.st; save(); openAuto(); });
+  document.querySelectorAll('[data-sg]').forEach(b=>b.onclick=()=>{ a.stage=b.dataset.sg; save(); openAuto(); });
+  document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{ a.fast=b.dataset.sp==='1'; save(); openAuto(); });
+  $('#aStart').onclick = () => { closeSheet(); startAuto(); };
 }
 
 /* ───── 투자 ───── */
@@ -513,10 +643,10 @@ let S = null;
 function newGame(groupName){
   return { v:1, group: groupName || 'NextBeat', month:1, money:500, fans:0, debuted:false,
     lastStage:null, stages:[], bestRank:null, songBonus:0, lastConcept:null, ended:false, firstWin:false,
-    fac:{}, prep:{}, beaten:[],
+    fac:{}, prep:{}, beaten:[], auto:{ style:'growth', stage:'ask', fast:false }, autoLog:[],
     members: MEMBERS.map(m=>({ id:m.id, ...m.base, cond:80, bond:10, ep:0, good:0, chatted:false, sched:null, line:null })) };
 }
-function migrate(s){ s.fac = s.fac || {}; s.prep = s.prep || {}; s.beaten = s.beaten || []; s.members.forEach(m=>{ m.ep = m.ep||0; m.good = m.good||0; }); return s; }
+function migrate(s){ s.fac = s.fac || {}; s.prep = s.prep || {}; s.beaten = s.beaten || []; s.members.forEach(m=>{ m.ep = m.ep||0; m.good = m.good||0; }); s.auto = s.auto || { style:'growth', stage:'ask', fast:false }; s.auto.on = false; s.autoLog = s.autoLog || []; return s; }
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 function load(){ try{ const t=localStorage.getItem(SAVE_KEY); return t?JSON.parse(t):null; }catch(e){ return null; } }
 
@@ -598,6 +728,7 @@ function renderMain(){
   <div class="goal"><span class="pill">${st.text}</span></div>
   <div class="tools">
     <button class="tool" id="invest">투자 <em>${Object.keys(s.prep).length?`무대 준비 +${prepBonus(s)}점`:'시설 · 무대 준비'}</em></button>
+    <button class="tool" id="auto">자동 운영 <em>${STYLES[s.auto.style].name}</em></button>
     <button class="tool" id="chart">라이벌 차트${nextRival(s)?` <em>목표 ${nextRival(s).name}</em>`:' <em>전원 격파</em>'}</button>
   </div>
   <main class="grid">
@@ -610,13 +741,18 @@ function renderMain(){
     </button>`; }).join('')}
   </main>
   <div class="dock"><div class="dock-in">
+    ${autoRunning ? `<button class="btn alt" id="aStop">자동 운영 멈추기<small>${STYLES[s.auto.style].name} · 진행 중</small></button>` : `
     <button class="btn gold" id="stage" ${st.ok?'':'disabled'}>${s.debuted?'컴백 무대':'데뷔 쇼케이스'}</button>
-    <button class="btn" id="next">이번 달 진행<small>운영비 ${LIVING_COST}만원</small></button>
+    <button class="btn" id="next">이번 달 진행<small>운영비 ${LIVING_COST}만원</small></button>`}
   </div></div>`;
-  document.querySelectorAll('.card').forEach(el=>el.onclick=()=>openMember(el.dataset.m));
-  $('#next').onclick = runMonth;
-  $('#stage').onclick = openStage;
-  $('#invest').onclick = openInvest;
+  if (autoRunning || (s.autoLog||[]).length){
+    $('.grid').insertAdjacentHTML('beforebegin', `<div class="alog ${autoRunning?'run':''}"><b>${autoRunning?'자동 운영 중':'최근 자동 운영 기록'}</b>${(s.autoLog||[]).slice(0, autoRunning?4:2).map(t=>`<p>${esc(t)}</p>`).join('')}</div>`);
+  }
+  document.querySelectorAll('.card').forEach(el=>el.onclick=()=>{ if (autoRunning) stopAuto('자동 운영을 멈췄어요.'); openMember(el.dataset.m); });
+  if (autoRunning){ $('#aStop').onclick = () => stopAuto('자동 운영을 멈췄어요.'); }
+  else { $('#next').onclick = runMonth; $('#stage').onclick = openStage; }
+  $('#auto').onclick = () => { if (autoRunning) stopAuto(); openAuto(); };
+  $('#invest').onclick = () => { if (autoRunning) stopAuto(); openInvest(); };
   $('#chart').onclick = openChart;
 }
 function bar(k,v,label){
@@ -663,9 +799,13 @@ function plannedCost(exceptId){ return S.members.reduce((t,m)=> t + (m.id!==exce
 
 /* ───── 한 달 진행 ───── */
 function runMonth(){
+  const r = simulateMonth();
+  if (r) showResult(r.rows, r.passive, r.ev);
+}
+function simulateMonth(){
   const s = S;
   const cost = s.members.reduce((t,m)=>t+(m.sched?SCHED[m.sched].cost:0),0);
-  if (cost > s.money){ toast('레슨비가 부족해요. 아르바이트나 휴식으로 바꿔주세요.'); return; }
+  if (cost > s.money){ toast('레슨비가 부족해요. 아르바이트나 휴식으로 바꿔주세요.'); return null; }
   const rows = [];
   s.money -= cost;
   for (const m of s.members){
@@ -710,7 +850,13 @@ function runMonth(){
   const ev = Math.random()<0.6 ? pick(evPool) : null;
   s.members.forEach(m=>{ m.chatted=false; m.line=null; });
   save();
-  showResult(rows, [passive, ...extra].filter(Boolean).join(' · '), ev);
+  return { rows, passive:[passive, ...extra].filter(Boolean).join(' · '), ev };
+}
+// 다음 달로 넘기기. 마지막 달이면 엔딩을 보여주고 false
+function advanceMonth(){
+  if (S.month >= LAST_MONTH){ stopAuto(); S.ended = true; save(); showEnding(saveRecord(S)); return false; }
+  S.month++; save(); renderMain();
+  return true;
 }
 
 function showResult(rows, passive, ev){
@@ -729,8 +875,8 @@ function showResult(rows, passive, ev){
   });
   $('#go').onclick = () => {
     closeSheet();
-    if (S.month >= LAST_MONTH){ S.ended = true; save(); showEnding(saveRecord(S)); return; }
-    S.month++; save(); renderMain(); checkStory();
+    if (!advanceMonth()) return;
+    checkStory();
     if (S.money < 0) toast('자금이 마이너스예요! 아르바이트·행사로 수입을 늘려주세요.');
   };
 }
@@ -925,7 +1071,8 @@ function perform(cid, acc, rs){
     </div>
     <p class="center" style="margin-top:12px">팬 <span class="up">+${fmt(fansGain)}</span> · 수익 <span class="up">+${income}만원</span> · 모두 컨디션 -10</p>
     ${firstWin?'<img class="photo" src="assets/group_photo.jpg" alt="멤버 4명 단체 사진"><p class="center" style="margin-top:8px;font-family:var(--f-display);font-size:22px;color:var(--accent)">음원차트 1위 달성!</p>':''}
-    <div class="row-btns"><button class="btn" data-close>확인</button></div>`, true);
+    <div class="row-btns"><button class="btn" id="stDone">${autoRunning||S.auto.resume?'확인 · 자동 운영 계속':'확인'}</button></div>`, true);
+  $('#stDone').onclick = () => { closeSheet(); if (S.auto.resume){ S.auto.resume = false; startAuto(); } else renderMain(); };
   countRank(rank);
   renderMain();
 }
