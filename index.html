@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>넥스트비트 데뷔 프로젝트</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -144,6 +145,15 @@ button:focus-visible{outline:3px solid var(--vocal);outline-offset:2px}
 .title .btns{display:grid;gap:12px;position:relative}
 .title input{width:100%;border-radius:14px;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:var(--stage-ink);padding:12px 14px;font:inherit;font-size:16px}
 .title label{font-size:12px;opacity:.7;display:block;margin-bottom:6px}
+.keyart#card img{aspect-ratio:auto}
+.hint{font-size:12.5px;text-align:center;margin-top:-8px!important}
+.share{display:grid;gap:10px;position:relative}
+.share h3{font-size:12px;letter-spacing:.06em;margin:4px 0 0;opacity:.75}
+.sns{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sns a,.sns button{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;background:rgba(255,255,255,.12);color:var(--stage-ink);font-weight:800;font-size:12.5px;text-decoration:none;text-align:center;padding:4px}
+.sns a:focus-visible{outline:3px solid var(--gold)}
+#stext{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--stage-ink);font:inherit;font-size:12.5px;padding:10px;resize:none}
+.res-row.rec{width:100%;text-align:left}
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--stage-ink);padding:10px 16px;border-radius:12px;z-index:40;font-size:13px;animation:up .2s;max-width:calc(100% - 32px)}
 </style>
 
@@ -290,6 +300,7 @@ function stageInfo(s){
 /* ───── 렌더: 타이틀 ───── */
 function renderTitle(){
   const saved = load();
+  const records = loadRecords();
   $('#app').innerHTML = `
   <section class="title">
     <div class="keyart"><img src="assets/key_egoring.jpg" alt="NextBeat 멤버 4명이 꽃밭에서 어깨동무한 뒷모습"></div>
@@ -300,6 +311,7 @@ function renderTitle(){
       ${saved && !saved.ended ? `<button class="btn" id="cont">이어하기<small>${esc(saved.group)} · ${periodText(saved.month)}</small></button>` : ''}
       <div><label for="gname">그룹 이름</label><input id="gname" maxlength="14" value="NextBeat" autocomplete="off"></div>
       <button class="btn ${saved && !saved.ended ? 'alt':''}" id="start">새로 시작</button>
+      ${records.length ? `<button class="btn alt" id="past">지난 결과 보기<small>최근: ${esc(records[0].group)} · 등급 ${records[0].grade} · ${records[0].date}</small></button>` : ''}
       <div class="center">${musicBtn()}</div>
     </div>
   </section>`;
@@ -312,6 +324,7 @@ function renderTitle(){
       $('#yes').onclick = () => { closeSheet(); doStart(); };
     } else doStart();
   };
+  if ($('#past')) $('#past').onclick = () => openRecords(records);
   if ($('#cont')) $('#cont').onclick = () => { playMusic(); S = saved; renderMain(); };
 }
 
@@ -464,7 +477,7 @@ function showResult(rows, passive, ev){
   });
   $('#go').onclick = () => {
     closeSheet();
-    if (S.month >= LAST_MONTH){ S.ended = true; save(); showEnding(); return; }
+    if (S.month >= LAST_MONTH){ S.ended = true; save(); showEnding(saveRecord(S)); return; }
     S.month++; save(); renderMain();
     if (S.money < 0) toast('자금이 마이너스예요! 아르바이트·행사로 수입을 늘려주세요.');
   };
@@ -530,27 +543,108 @@ function countRank(target){
 }
 
 /* ───── 엔딩 ───── */
-function showEnding(){
-  const s = S, r = s.bestRank;
-  const [grade, msg] = !r ? ['F','결국 데뷔하지 못했어요. 다음엔 레슨을 더 열심히!']
+const RECORDS_KEY = 'nextbeat-records';
+const SHARE_URL = 'https://claude.ai/artifact/Ltv4NvRCdE555X48X5tV9H'; // 게임 링크 (공유 글에 들어감)
+function gradeOf(r){
+  return !r ? ['F','결국 데뷔하지 못했어요. 다음엔 레슨을 더 열심히!']
     : r===1 ? ['S','음원차트 1위! 대한민국 최고의 걸그룹이 탄생했어요.']
     : r<=10 ? ['A','TOP 10 진입! 모두가 아는 그룹이 되었어요.']
     : r<=30 ? ['B','차트 상위권의 실력파 그룹으로 자리 잡았어요.']
     : r<=60 ? ['C','꾸준히 사랑받는 그룹이 되었어요.'] : ['D','아직 갈 길이 멀지만 팬들은 기다려줄 거예요.'];
+}
+function loadRecords(){ try{ return JSON.parse(localStorage.getItem(RECORDS_KEY)) || []; }catch(e){ return []; } }
+function saveRecord(s){
+  const top = s.members.map(m=>({id:m.id, total:m.vocal+m.dance+m.charm})).sort((a,b)=>b.total-a.total)[0];
+  const rec = { date:new Date().toISOString().slice(0,10), group:s.group, bestRank:s.bestRank, fans:s.fans,
+    stages:s.stages.length, grade:gradeOf(s.bestRank)[0], ace:top.id };
+  const list = [rec, ...loadRecords()].slice(0,10);
+  try{ localStorage.setItem(RECORDS_KEY, JSON.stringify(list)); }catch(e){}
+  return rec;
+}
+const shareText = rec => `[${rec.group}] 24개월 아이돌 육성 결과: 등급 ${rec.grade} · 최고 ${rec.bestRank ? '음원차트 '+rec.bestRank+'위' : '데뷔 실패'} · 팬 ${fmt(rec.fans)}명! 너도 키워봐 #NextBeat #아이돌키우기`;
+
+// 결과 카드 이미지 (1080×1350) 그리기
+function loadImg(src){ return new Promise((ok,no)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=no; i.src=src; }); }
+async function drawCard(rec){
+  try{ await document.fonts.load('80px "Jua"'); await document.fonts.load('800 30px "Gothic A1"'); }catch(e){}
+  const W=1080, H=1350, c=document.createElement('canvas'); c.width=W; c.height=H;
+  const g=c.getContext('2d');
+  g.fillStyle='#1F2140'; g.fillRect(0,0,W,H);
+  const photo = await loadImg(`assets/${rec.bestRank && rec.bestRank<=10 ? 'group_photo' : 'key_egoring'}.jpg`);
+  g.drawImage(photo,0,0,W,W);
+  const grad=g.createLinearGradient(0,W-420,0,W); grad.addColorStop(0,'rgba(31,33,64,0)'); grad.addColorStop(1,'rgba(31,33,64,1)');
+  g.fillStyle=grad; g.fillRect(0,W-420,W,420);
+  const D='"Jua","Gothic A1",sans-serif', B='"Gothic A1",sans-serif';
+  g.textBaseline='alphabetic';
+  g.fillStyle='rgba(244,242,255,.8)'; g.font=`600 34px ${B}`; g.fillText(`${rec.group} · 24개월의 기록`,64,W-150);
+  g.fillStyle='#F4F2FF'; g.font=`120px ${D}`; g.fillText('등급',64,W-20);
+  const gw=g.measureText('등급 ').width; g.fillStyle='#FF4F8B'; g.fillText(rec.grade,64+gw,W-20);
+  // 숫자 칸
+  const cells=[['최고 순위',rec.bestRank?rec.bestRank+'위':'-'],['팬',fmt(rec.fans)+'명'],['무대',rec.stages+'회']];
+  const cw=(W-128-40)/3;
+  cells.forEach(([k,v],i)=>{ const x=64+i*(cw+20), y=W+20;
+    g.fillStyle='rgba(255,255,255,.08)'; roundRect(g,x,y,cw,136,24); g.fill();
+    g.fillStyle='rgba(244,242,255,.7)'; g.font=`600 28px ${B}`; g.fillText(k,x+28,y+48);
+    g.fillStyle='#F4F2FF'; g.font=`800 46px ${B}`; g.fillText(v,x+28,y+110); });
+  g.fillStyle='rgba(244,242,255,.6)'; g.font=`600 28px ${B}`;
+  g.fillText(`에이스 ${BY_ID[rec.ace]?.name||''} · ${rec.date}`,64,H-64);
+  g.textAlign='right'; g.fillStyle='#FF4F8B'; g.font=`40px ${D}`; g.fillText('넥스트비트 데뷔 프로젝트',W-64,H-60);
+  return c;
+}
+function roundRect(g,x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+
+function showEnding(rec){
+  const [grade, msg] = gradeOf(rec.bestRank);
+  const t = encodeURIComponent(shareText(rec)), u = encodeURIComponent(SHARE_URL);
   $('#app').innerHTML = `
   <section class="title">
-    <p>${esc(s.group)} · ${LAST_MONTH}개월의 기록</p>
+    <p>${esc(rec.group)} · ${LAST_MONTH}개월의 기록 · ${rec.date}</p>
     <h1>등급 <em>${grade}</em></h1>
     <p>${msg}</p>
-    <div class="keyart"><img src="assets/${r && r<=10 ? 'group_photo' : 'key_egoring'}.jpg" alt="${esc(s.group)} 멤버 4명"></div>
+    <div class="keyart" id="card"><img src="assets/${rec.bestRank && rec.bestRank<=10 ? 'group_photo' : 'key_egoring'}.jpg" alt="${esc(rec.group)} 멤버 4명"></div>
+    <p class="hint" id="hint">결과 카드를 만드는 중…</p>
     <div class="wallet" style="margin:0">
-      <div><span>최고 순위</span><b class="num">${r?r+'위':'-'}</b></div>
-      <div><span>팬</span><b class="num">${fmt(s.fans)}</b></div>
-      <div><span>무대</span><b class="num">${s.stages.length}회</b></div>
+      <div><span>최고 순위</span><b class="num">${rec.bestRank?rec.bestRank+'위':'-'}</b></div>
+      <div><span>팬</span><b class="num">${fmt(rec.fans)}</b></div>
+      <div><span>무대</span><b class="num">${rec.stages}회</b></div>
     </div>
-    <div class="btns"><button class="btn" id="again">다시 시작</button></div>
+    <div class="share">
+      <h3>결과 공유하기</h3>
+      <button class="btn gold" id="nshare" hidden>이미지와 함께 공유</button>
+      <div class="sns">
+        <a href="https://twitter.com/intent/tweet?text=${t}&url=${u}" target="_blank" rel="noopener">X</a>
+        <a href="https://www.threads.net/intent/post?text=${t}%20${u}" target="_blank" rel="noopener">Threads</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${u}" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://social-plugins.line.me/lineit/share?url=${u}&text=${t}" target="_blank" rel="noopener">LINE</a>
+        <button id="copy">글 복사</button>
+      </div>
+      <textarea id="stext" readonly rows="3">${esc(shareText(rec))} ${SHARE_URL}</textarea>
+    </div>
+    <div class="btns"><button class="btn" id="again">새 게임 시작</button></div>
   </section>`;
-  $('#again').onclick = () => { try{ localStorage.removeItem(SAVE_KEY); }catch(e){} renderTitle(); };
+  $('#again').onclick = () => { try{ localStorage.removeItem(SAVE_KEY); }catch(e){} S=null; renderTitle(); };
+  $('#copy').onclick = () => {
+    const txt = $('#stext').value;
+    const fallback = () => { const ta=$('#stext'); ta.focus(); ta.select(); toast('글이 선택됐어요. 복사해서 붙여넣어 주세요.'); };
+    try { navigator.clipboard.writeText(txt).then(()=>toast('공유 글을 복사했어요. 인스타그램·카카오톡에 붙여넣어 보세요.'), fallback); } catch(e){ fallback(); }
+  };
+  drawCard(rec).then(canvas => {
+    const url = canvas.toDataURL('image/jpeg', 0.9);
+    $('#card').innerHTML = `<img src="${url}" alt="${esc(rec.group)} 결과 카드: 등급 ${grade}">`;
+    $('#hint').textContent = '결과 카드 이미지를 길게 눌러 사진첩에 저장할 수 있어요.';
+    canvas.toBlob(blob => {
+      if (!blob || !navigator.canShare) return;
+      const file = new File([blob], 'nextbeat-result.jpg', { type:'image/jpeg' });
+      if (!navigator.canShare({ files:[file] })) return;
+      const btn = $('#nshare'); btn.hidden = false;
+      btn.onclick = () => navigator.share({ files:[file], text: shareText(rec), url: SHARE_URL }).catch(()=>{});
+    }, 'image/jpeg', 0.9);
+  }).catch(() => { $('#hint').textContent = '화면을 캡처해서 결과를 저장할 수 있어요.'; });
+}
+function openRecords(list){
+  openSheet(`<button class="x" data-close aria-label="닫기">×</button><h2>지난 결과</h2>
+    <div class="res">${list.map((r,i)=>`<button class="res-row rec" data-i="${i}">${avatar(r.ace,'big')}<div><b>${esc(r.group)} · 등급 ${r.grade}</b><span>${r.date} · 최고 ${r.bestRank?r.bestRank+'위':'-'} · 팬 ${fmt(r.fans)}</span></div></button>`).join('')}</div>`);
+  document.querySelectorAll('.rec').forEach(b=>b.onclick=()=>{ closeSheet(); showEnding(list[+b.dataset.i]); });
 }
 
 /* ───── 시트 / 토스트 ───── */
