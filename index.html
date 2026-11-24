@@ -705,6 +705,7 @@ function renderTitle(){
       <div><label for="gname">그룹 이름</label><input id="gname" maxlength="14" value="NextBeat" autocomplete="off"></div>
       <button class="btn ${saved && !saved.ended ? 'alt':''}" id="start">새로 시작</button>
       ${records.length ? `<button class="btn alt" id="past">지난 결과 보기<small>최근: ${esc(records[0].group)} · 등급 ${records[0].grade} · ${records[0].date}</small></button>` : ''}
+      <a class="btn alt" href="tarot.html" style="text-decoration:none;text-align:center">🔮 고양이 타로 상담<small>고양이가 목소리로 카드를 읽어 줘요</small></a>
       <div class="center">${musicBtn()}</div>
     </div>
   </section>`;
