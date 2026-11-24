@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0818">
-<title>NEXT BEAT 타로 상담</title>
+<title>고양이 타로 상담</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 :root{
   --bg:#0d0818; --bg2:#1b1033; --panel:rgba(28,18,52,.86); --panel2:rgba(40,26,72,.9);
   --line:rgba(226,192,107,.3); --gold:#e2c06b; --gold2:#f5dc9a;
-  --text:#efe9fa; --muted:#a99fc6; --char:#a78bfa;
+  --text:#efe9fa; --muted:#a99fc6; --char:#b48cff;
   --f-body:"Noto Sans KR",system-ui,sans-serif; --f-deco:"Cormorant Garamond",serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -26,7 +26,7 @@ body{
 }
 body.has-input{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
-input{font:inherit}
+input,select{font:inherit}
 .hidden{display:none!important}
 #stars{position:fixed;inset:0;pointer-events:none;z-index:0}
 #stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.2;animation:tw 3s ease-in-out infinite}
@@ -36,42 +36,41 @@ input{font:inherit}
 .top{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;
   max-width:480px;margin:0 auto;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));
   background:linear-gradient(180deg,var(--bg) 70%,transparent)}
-.logo{font-family:var(--f-deco);font-weight:700;letter-spacing:.18em;font-size:18px;color:var(--gold)}
+.logo{font-family:var(--f-deco);font-weight:700;letter-spacing:.16em;font-size:18px;color:var(--gold)}
 .logo small{display:block;font-family:var(--f-body);font-size:10px;letter-spacing:.08em;color:var(--muted);font-weight:400}
-.top-btns{display:flex;gap:8px}
-.icon-btn{height:36px;min-width:36px;padding:0 10px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-size:13px;display:flex;align-items:center;gap:4px}
+.top-btns{display:flex;gap:6px}
+.icon-btn{height:36px;min-width:36px;padding:0 10px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-size:13px;display:flex;align-items:center;justify-content:center;gap:4px}
 .icon-btn[aria-pressed="false"]{opacity:.55}
+.icon-btn .dot{width:7px;height:7px;border-radius:50%;background:#6b6386}
+.icon-btn .dot.on{background:#5fe0a0;box-shadow:0 0 6px #5fe0a0}
 
 main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24px}
 
-/* 캐릭터 고르기 */
-.intro{text-align:center;padding:8px 0 18px}
-.intro h1{font-size:22px;font-weight:700;line-height:1.4}
+/* 시작 화면 */
+.intro{text-align:center;padding:4px 0 10px}
+.intro .cat-hero{width:220px;height:220px;margin:4px auto 10px;position:relative}
+.intro .cat-hero .aura{inset:-10px}
+.intro .cat-hero .catbox{width:100%;height:100%;border-radius:50%;overflow:hidden;border:3px solid var(--char);
+  box-shadow:0 0 0 6px rgba(13,8,24,.8),0 0 0 7px var(--line);background:radial-gradient(circle at 50% 35%,#3b2370,#1a0f33)}
+.intro h1{font-size:23px;font-weight:700;line-height:1.4}
 .intro h1 em{font-style:normal;color:var(--gold)}
 .intro p{color:var(--muted);font-size:14px;line-height:1.6;margin-top:8px}
-.how{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.how{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
 .how span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--gold2)}
-.char-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.char-card{position:relative;text-align:left;border-radius:18px;overflow:hidden;background:var(--panel);border:1px solid var(--line);
-  transition:transform .15s,border-color .15s}
-.char-card:active{transform:scale(.97)}
-.char-card:hover{border-color:var(--c)}
-.char-card img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
-.char-card .info{padding:10px 12px 12px}
-.char-card .nm{font-weight:700;font-size:17px;display:flex;align-items:center;gap:6px}
-.char-card .tg{font-size:11px;font-weight:500;color:#120a26;background:var(--c);border-radius:999px;padding:2px 8px}
-.char-card .ds{font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px;min-height:36px}
-.char-card .pv{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;background:rgba(13,8,24,.7);
-  border:1px solid rgba(255,255,255,.25);font-size:15px;display:flex;align-items:center;justify-content:center}
-.note{font-size:12px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6}
+.start-btns{display:grid;gap:10px;margin-top:22px}
+.ai-state{font-size:12.5px;color:var(--muted);text-align:center;line-height:1.6}
+.ai-state b{color:var(--gold2);font-weight:500}
+.ai-state button{color:var(--gold2);text-decoration:underline;font-size:12.5px}
+.note{font-size:12px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.6}
 .note a{color:var(--gold2)}
 
 /* 상담실 */
 .stage{display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0 14px}
 .avatar-wrap{position:relative;width:184px;height:184px;flex:none}
 .aura{position:absolute;inset:-16px;border-radius:50%;background:radial-gradient(circle,var(--char) 0%,transparent 68%);opacity:.32;transition:opacity .3s}
-#avatar{position:relative;width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--char);
-  box-shadow:0 0 0 6px rgba(13,8,24,.8),0 0 0 7px var(--line);background:#222}
+#avatar{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;border:3px solid var(--char);
+  box-shadow:0 0 0 6px rgba(13,8,24,.8),0 0 0 7px var(--line);background:radial-gradient(circle at 50% 35%,#3b2370,#1a0f33)}
+.catbox svg{display:block;width:100%;height:100%}
 .eq{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);display:flex;gap:3px;align-items:flex-end;height:16px;
   padding:3px 8px;border-radius:10px;background:var(--bg);border:1px solid var(--char);opacity:0;transition:opacity .2s}
 .eq i{width:3px;height:4px;background:var(--char);border-radius:2px}
@@ -79,10 +78,20 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
 .speaking .eq i{animation:eq .5s ease-in-out infinite alternate}
 .speaking .eq i:nth-child(2){animation-delay:.15s}.speaking .eq i:nth-child(3){animation-delay:.3s}.speaking .eq i:nth-child(4){animation-delay:.08s}
 @keyframes eq{to{height:10px}}
-.speaking #avatar{animation:talk .36s ease-in-out infinite alternate}
+.speaking #avatar svg{animation:talk .36s ease-in-out infinite alternate}
 .speaking .aura{opacity:.55;animation:aura 1.2s ease-in-out infinite alternate}
-@keyframes talk{to{transform:translateY(-2px) scale(1.012)}}
+@keyframes talk{to{transform:translateY(-1.5px) rotate(.6deg)}}
 @keyframes aura{to{transform:scale(1.06)}}
+
+/* 고양이 그림 */
+.cat .m-open{display:none}
+.mo .cat .m-open{display:inline}
+.mo .cat .m-closed{display:none}
+.cat .eye-blink{animation:blink-eye 4.2s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes blink-eye{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.cat .tail{animation:tail 2.4s ease-in-out infinite;transform-origin:150px 190px}
+@keyframes tail{50%{transform:rotate(8deg)}}
+.cat .hatstar{animation:tw 2s ease-in-out infinite}
 
 .dialog{position:relative;width:100%;min-height:104px;background:var(--panel);border:1px solid var(--line);border-radius:18px;
   padding:14px 16px 18px;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -106,7 +115,9 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:14px;padding:13px 18px;font-weight:700;font-size:15px;
   background:linear-gradient(180deg,var(--gold2),var(--gold));color:#1a0f2e;box-shadow:0 4px 18px rgba(226,192,107,.25)}
 .btn:active{transform:translateY(1px)}
+.btn.big{padding:16px 18px;font-size:17px}
 .btn.ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--line);box-shadow:none;font-weight:500}
+.btn.danger{background:rgba(255,93,122,.12);color:#ff9fb0;border:1px solid rgba(255,93,122,.35);box-shadow:none;font-weight:500}
 .btn[disabled]{opacity:.4;pointer-events:none}
 
 .panel h2{font-size:17px;text-align:center;font-weight:700}
@@ -154,7 +165,6 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
 @keyframes sh2{50%{transform:translateX(58px) rotate(10deg)}}
 
 .spread{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
-.spread.four{grid-template-columns:repeat(4,1fr);gap:8px}
 .slot .pos{text-align:center;font-size:12px;color:var(--gold2);margin-bottom:6px;letter-spacing:.1em}
 .slot .cap{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;min-height:18px}
 .slot.active .tcard{filter:drop-shadow(0 0 12px rgba(226,192,107,.55))}
@@ -170,7 +180,8 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
 .rcard .n small{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
 .rcard .m{font-size:13px;color:#d7cfe8;line-height:1.6;margin-top:4px;word-break:keep-all}
 .summary{margin-top:14px;background:linear-gradient(160deg,rgba(226,192,107,.12),rgba(167,139,250,.08));border:1px solid var(--line);border-radius:16px;padding:14px 16px}
-.summary h3{font-size:14px;color:var(--gold);margin-bottom:8px;font-weight:700}
+.summary h3{font-size:14px;color:var(--gold);margin-bottom:8px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.summary h3 small{font-size:11px;color:var(--muted);font-weight:400}
 .summary p{font-size:14px;line-height:1.75;word-break:keep-all}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
 .actions .wide{grid-column:1/-1}
@@ -178,7 +189,7 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
 .log-title::after{content:"";flex:1;height:1px;background:var(--line)}
 .log{display:flex;flex-direction:column;gap:10px}
 .msg{display:flex;gap:8px;align-items:flex-end;max-width:92%}
-.msg img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid var(--char);flex:none}
+.msg .mini{width:30px;height:30px;border-radius:50%;overflow:hidden;border:1.5px solid var(--char);flex:none;background:#2a1850}
 .msg p{font-size:14px;line-height:1.6;padding:9px 12px;border-radius:14px 14px 14px 4px;background:var(--panel2);word-break:keep-all}
 .msg.me{align-self:flex-end}
 .msg.me p{background:rgba(226,192,107,.18);border-radius:14px 14px 4px 14px}
@@ -188,7 +199,7 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
 .inputbar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:10px 16px calc(12px + env(safe-area-inset-bottom));
   background:linear-gradient(0deg,var(--bg) 75%,transparent)}
 .inputbar .row{max-width:448px;margin:0 auto;display:flex;gap:8px;align-items:center}
-#mic{flex:none;width:52px;height:52px;border-radius:50%;background:var(--char);color:#120a26;font-size:22px;
+#mic{flex:none;width:52px;height:52px;border-radius:50%;background:var(--char);color:#120a26;
   box-shadow:0 0 0 4px rgba(13,8,24,.9),0 0 0 5px var(--line);display:flex;align-items:center;justify-content:center}
 #mic svg{width:24px;height:24px}
 #mic.on{background:#ff5d7a;animation:micp 1s ease-in-out infinite}
@@ -196,9 +207,32 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
 #text{flex:1;min-width:0;height:48px;border-radius:24px;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:0 16px;font-size:16px;outline:none}
 #text:focus{border-color:var(--gold)}
 #send{flex:none;height:48px;padding:0 16px;border-radius:24px;background:rgba(226,192,107,.18);color:var(--gold2);font-weight:700;font-size:14px}
-.mic-hint{max-width:448px;margin:0 auto 6px;font-size:12px;color:var(--gold2);text-align:center;min-height:0}
+.mic-hint{max-width:448px;margin:0 auto 6px;font-size:12px;color:var(--gold2);text-align:center}
 
-#toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);z-index:60;
+/* 설정 창 */
+.modal{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,2,12,.7);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.sheet{width:100%;max-width:480px;max-height:92dvh;overflow:auto;background:#160d2c;border:1px solid var(--line);border-bottom:0;
+  border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+.sheet h2{font-size:18px;display:flex;justify-content:space-between;align-items:center}
+.sheet h2 button{font-size:22px;color:var(--muted);width:36px;height:36px}
+.sheet .desc{font-size:13px;color:var(--muted);line-height:1.65;margin-top:8px}
+.field{margin-top:16px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--gold2)}
+.field .row{display:flex;gap:6px}
+.field input,.field select{width:100%;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:0 12px;font-size:15px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--gold)}
+.field .row button{flex:none;padding:0 12px;border-radius:12px;border:1px solid var(--line);font-size:13px}
+.field small{display:block;font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+.field small a{color:var(--gold2)}
+.sheet .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.sheet .btns .wide{grid-column:1/-1}
+.test-out{margin-top:12px;font-size:13px;line-height:1.6;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.test-out.ok{border-color:rgba(95,224,160,.5);color:#b9f3d6}
+.test-out.err{border-color:rgba(255,93,122,.5);color:#ffb3c1}
+.warn{margin-top:16px;font-size:12px;line-height:1.65;color:#e9d8a6;background:rgba(226,192,107,.08);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+
+#toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);z-index:90;
   background:#2c1d4e;border:1px solid var(--line);color:var(--text);padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;
   transition:.25s;pointer-events:none;width:max-content;max-width:calc(100% - 32px);text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%)}
@@ -216,22 +250,27 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
 <div id="stars" aria-hidden="true"></div>
 
 <header class="top">
-  <div class="logo">NEXT BEAT TAROT<small>넥스트비트 멤버의 음성 타로 상담</small></div>
+  <div class="logo">CAT TAROT<small>고양이와 목소리로 나누는 타로 상담</small></div>
   <div class="top-btns">
-    <button class="icon-btn" id="voiceBtn" aria-pressed="true" title="목소리 켜기/끄기">🔊 목소리</button>
-    <button class="icon-btn hidden" id="homeBtn" title="멤버 다시 고르기">⌂</button>
+    <button class="icon-btn" id="voiceBtn" aria-pressed="true" title="목소리 켜기/끄기">🔊</button>
+    <button class="icon-btn" id="setBtn" title="AI 설정 (API 키)"><span class="dot" id="aiDot"></span>AI 설정</button>
+    <button class="icon-btn hidden" id="homeBtn" title="처음으로">⌂</button>
   </div>
 </header>
 
 <main>
-  <!-- 1. 상담할 멤버 고르기 -->
+  <!-- 1. 시작 화면 -->
   <section id="select">
     <div class="intro">
-      <h1>오늘은 누구에게<br><em>타로 상담</em>을 받을까요?</h1>
-      <p>멤버가 직접 목소리로 이야기하며 카드를 읽어 줘요.</p>
+      <div class="cat-hero"><div class="aura"></div><div class="catbox" id="heroCat"></div></div>
+      <h1>타로 고양이 <em id="heroName"></em>에게<br>무엇이든 물어보세요</h1>
+      <p>고양이가 직접 목소리로 이야기하며 카드를 읽어 줘요.</p>
       <div class="how"><span>🔊 소리를 켜 주세요</span><span>🎤 말로 질문해도 돼요</span><span>🃏 카드 3장</span></div>
+      <div class="start-btns">
+        <button class="btn big" id="startBtn">상담 시작하기</button>
+        <p class="ai-state" id="aiState"></p>
+      </div>
     </div>
-    <div class="char-grid" id="charGrid"></div>
     <p class="note">마이크 입력은 크롬·사파리·삼성 인터넷에서 돼요. 안 되면 글로 적어도 똑같이 상담할 수 있어요.<br>
       <a href="index.html">← 넥스트비트 데뷔 프로젝트(육성 게임)로</a></p>
   </section>
@@ -241,7 +280,7 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
     <div class="stage" id="stage">
       <div class="avatar-wrap">
         <div class="aura"></div>
-        <img id="avatar" alt="">
+        <div id="avatar" class="catbox"></div>
         <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       </div>
       <div class="dialog" id="dialog" role="button" tabindex="0" aria-live="polite">
@@ -269,113 +308,125 @@ main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 24
     <button id="send">보내기</button>
   </div>
 </div>
+
+<!-- AI 설정 (API 키 넣는 곳) -->
+<div class="modal hidden" id="setModal" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="sheet">
+    <h2 id="setTitle">AI 해석 설정 <button id="setClose" aria-label="닫기">×</button></h2>
+    <p class="desc">Claude API 키를 넣으면 고양이가 질문에 맞춰 직접 해석을 만들고, 추가 질문에도 자유롭게 대답해요.
+      키가 없으면 미리 준비된 해석으로 진행돼요.</p>
+    <div class="field">
+      <label for="keyIn">Claude API 키</label>
+      <div class="row">
+        <input id="keyIn" type="password" placeholder="sk-ant-로 시작하는 키" autocomplete="off" spellcheck="false">
+        <button id="keyShow" type="button">보기</button>
+      </div>
+      <small>키는 <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic 콘솔 → API Keys</a>에서 만들 수 있어요.</small>
+    </div>
+    <div class="field">
+      <label for="modelIn">AI 모델</label>
+      <select id="modelIn">
+        <option value="claude-opus-5-5">Claude Opus 5.5 · 해석이 가장 깊어요 (기본)</option>
+        <option value="claude-sonnet-5-5">Claude Sonnet 5.5 · 더 빠르고 저렴해요</option>
+        <option value="claude-haiku-5-5">Claude Haiku 5.5 · 가장 빠르고 저렴해요</option>
+      </select>
+    </div>
+    <div class="btns">
+      <button class="btn wide" id="keySave">저장하기</button>
+      <button class="btn ghost" id="keyTest">연결 테스트</button>
+      <button class="btn danger" id="keyDel">키 지우기</button>
+    </div>
+    <div class="test-out hidden" id="testOut"></div>
+    <p class="warn">🔒 키는 이 브라우저에만 저장되고, Anthropic 서버로만 보내져요. 공용 PC라면 사용 후 「키 지우기」를 눌러 주세요.
+      여러 사람에게 공개하는 서비스로 운영할 때는 키를 화면에 두지 말고 서버에 보관하는 방식으로 바꿔야 해요.</p>
+  </div>
+</div>
 <div id="toast" role="status"></div>
 
 <script>
-/* ═════════════ 데이터: 상담 멤버 ═════════════ */
-const CHARS = {
-  dorin:{ id:'dorin', name:'도린', color:'#45c1cf', tag:'직설 리딩', desc:'돌려 말하지 않아요. 핵심만 짚어 주는 쿨한 상담',
-    pitch:0.85, rate:1.0,
-    preview:'…도린이에요. 타로, 제가 봐 줄까요?',
-    greet:['…왔어요? 오늘 타로는 제가 봐 줄게요.','궁금한 거, 돌려 말하지 말고 그냥 말해 주세요. 마이크를 눌러 말해도 되고, 적어도 돼요.'],
-    again:['또 궁금한 거 있어요? 말해 봐요.'],
-    ack:q=>`「${q}」… 알겠어요. 진지하게 볼게요.`,
-    ackSelf:'…저희 얘기예요? 좀 쑥스럽네요. 그래도 제대로 볼게요.',
-    focus:'카드 섞을게요. 눈 감고, 질문을 한 번만 더 떠올려 주세요.',
-    pick:'이제 마음 가는 카드 세 장 골라 주세요. 고민하지 말고, 손 가는 대로요.',
-    pickReact:['하나.','두 장.','…좋아요. 다 골랐어요.'],
-    reveal:'그럼 하나씩 뒤집을게요.',
-    react:{ good:['좋은 카드예요. …솔직히 저도 좀 안심했어요.','이건 확실히 좋은 신호예요. 믿어도 돼요.'],
-            caution:['…조금 조심해야 할 카드예요. 그래도 겁먹을 필요는 없어요.','쉬운 카드는 아니에요. 근데 미리 알면 피할 수 있어요.'],
-            wait:['서두르지 말라는 뜻이에요.','지금은 한 템포 쉬어 가는 게 맞아요.'],
-            neutral:['나쁘지 않아요. 하기 나름이에요.','흐름은 괜찮아요. 남은 건 행동이에요.'] },
-    sumIntro:'정리할게요.',
-    close:{ high:'…제 생각엔, 잘될 거예요. 진심이에요.', mid:'할 수 있어요. 제가 봤을 땐 충분해요.', low:'…힘들면 혼자 참지 말고 말해요. 들어 줄게요.' },
-    followPrompt:'더 궁금한 거 있으면 물어봐요. 세 번까지 더 대답해 줄게요. 카드를 한 장 더 뽑아 봐도 되고요.',
-    followOpen:['그 질문이요.','음, 그거라면.','짧게 말할게요.'],
-    followLeft:n=>`…${n}번 더 물어볼 수 있어요.`,
-    followEnd:'오늘은 여기까지 할게요. …또 와요. 기다릴게요.',
-    thanks:'…별말씀을요. 저도 나쁘지 않았어요.',
-    extraPick:'한 장 더요? 좋아요. 제일 끌리는 걸로 골라 주세요.',
-    afterExtra:'이제 더 궁금한 거 있으면 물어봐요.',
-    unclear:'…잘 못 들었어요. 한 번만 더 말해 줄래요?' },
-  garam:{ id:'garam', name:'가람', color:'#f4b14a', tag:'응원 리딩', desc:'무조건 내 편! 에너지 넘치는 긍정 상담',
-    pitch:1.3, rate:1.1,
-    preview:'안녕하세요! 가람이에요! 타로 보러 왔어요?',
-    greet:['와, 어서 와요! 오늘 타로 상담은 가람이가 맡았어요!','뭐든 물어봐요! 마이크 누르고 말해도 되고, 적어 줘도 좋아요!'],
-    again:['또 왔다! 이번엔 뭐가 궁금해요?'],
-    ack:q=>`「${q}」! 오, 완전 중요한 질문이네요. 제가 제대로 봐 줄게요!`,
-    ackSelf:'헉, 저희 얘기예요? 너무 좋아! 열심히 봐 줄게요!',
-    focus:'카드 섞는 중이에요! 두 눈 꼭 감고 질문을 떠올려 봐요!',
-    pick:'자, 이제 끌리는 카드 세 장 골라 줘요! 느낌 가는 대로!',
-    pickReact:['오, 첫 번째!','좋아요, 두 번째!','마지막까지 완벽해요!'],
-    reveal:'두근두근, 이제 뒤집어 볼게요!',
-    react:{ good:['우와, 완전 좋은 카드예요! 저 지금 소름 돋았어요!','대박! 이거 진짜 좋은 신호예요!'],
-            caution:['앗, 살짝 조심하라는 카드예요. 그래도 걱정 마요, 제가 같이 있잖아요!','음, 쉬운 카드는 아니지만 이겨 낼 수 있어요. 파이팅이에요!'],
-            wait:['조금만 기다려 보래요! 기다리는 것도 실력이에요!','지금은 숨 고르기 타이밍이래요!'],
-            neutral:['오, 무난하고 괜찮은 흐름이에요! 이제 우리가 잘하면 돼요!','좋아요, 가능성이 충분해요!'] },
-    sumIntro:'자, 이제 종합해 볼게요!',
-    close:{ high:'진짜 잘될 거예요! 결과 나오면 저한테도 꼭 알려 줘요!', mid:'저는 무조건 응원해요! 우리 같이 힘내요!', low:'힘든 시기여도 괜찮아요! 제가 옆에서 제일 크게 응원할게요!' },
-    followPrompt:'더 궁금한 거 있어요? 세 번까지 더 물어봐도 돼요! 카드 한 장 더 뽑기도 가능해요!',
-    followOpen:['오, 좋은 질문!','그거 저도 궁금했어요!','알려 줄게요!'],
-    followLeft:n=>`앞으로 ${n}번 더 물어볼 수 있어요!`,
-    followEnd:'오늘 상담 끝! 너무 즐거웠어요. 또 놀러 와요!',
-    thanks:'에이, 저야말로 고마워요! 헤헤.',
-    extraPick:'한 장 더 뽑는 거예요? 좋아요! 제일 반짝여 보이는 카드로!',
-    afterExtra:'더 궁금한 거 있으면 또 물어봐요!',
-    unclear:'앗, 잘 못 들었어요! 한 번만 더 말해 줄래요?' },
-  seon:{ id:'seon', name:'세온', color:'#ee96a8', tag:'힐링 리딩', desc:'따뜻하게 들어 주고 다정하게 짚어 주는 상담',
-    pitch:1.05, rate:0.93,
-    preview:'안녕하세요, 세온이에요. 오늘 마음은 어때요?',
-    greet:['안녕하세요. 와 줘서 고마워요. 오늘은 제가 카드를 읽어 드릴게요.','마음에 걸리는 일, 천천히 들려주세요. 말로 해도 되고 글로 적어도 괜찮아요.'],
-    again:['또 마음에 걸리는 게 있군요. 천천히 말해 주세요.'],
-    ack:q=>`「${q}」… 그 마음 충분히 이해해요. 같이 천천히 볼게요.`,
-    ackSelf:'저희를 생각해 주는 질문이네요. 고마워요. 정성껏 볼게요.',
-    focus:'카드를 섞을게요. 편하게 숨을 쉬면서 질문을 마음속으로 떠올려 보세요.',
-    pick:'이제 마음이 이끄는 카드 세 장을 골라 주세요. 천천히 골라도 괜찮아요.',
-    pickReact:['첫 번째 카드예요.','두 번째도 골랐네요.','세 장 모두 골랐어요. 고마워요.'],
-    reveal:'그럼 한 장씩 같이 볼게요.',
-    react:{ good:['정말 따뜻한 카드가 나왔어요. 마음이 놓이네요.','참 좋은 카드예요. 그동안 애쓴 마음이 보이는 것 같아요.'],
-            caution:['조금 조심스러운 카드예요. 그래도 괜찮아요, 미리 알면 덜 흔들릴 거예요.','마음이 살짝 무거울 수 있는 카드예요. 천천히 같이 볼게요.'],
-            wait:['잠시 쉬어 가도 괜찮다고 말해 주는 카드예요.','조급해하지 않아도 된다고 하네요.'],
-            neutral:['잔잔하고 안정적인 흐름이에요.','차분하게 가면 충분히 좋아질 흐름이에요.'] },
-    sumIntro:'그럼 세 장을 함께 이어서 볼게요.',
-    close:{ high:'좋은 일이 기다리고 있어요. 오늘 밤은 편하게 쉬어요.', mid:'어떤 결과든, 당신의 마음이 제일 소중해요. 오늘도 수고 많았어요.', low:'지금 힘든 만큼, 꼭 좋은 날이 올 거예요. 제가 노래로 응원할게요.' },
-    followPrompt:'더 궁금한 게 있으면 편하게 물어보세요. 세 번까지 더 이야기해 드릴 수 있어요. 카드를 한 장 더 뽑아도 좋아요.',
-    followOpen:['그게 마음에 걸렸군요.','좋은 질문이에요.','같이 볼게요.'],
-    followLeft:n=>`${n}번 더 물어볼 수 있어요.`,
-    followEnd:'오늘 이야기는 여기까지 할게요. 마음이 조금은 가벼워졌으면 좋겠어요.',
-    thanks:'저야말로 고마워요. 이야기해 줘서요.',
-    extraPick:'한 장 더 볼까요? 마음이 가장 오래 머무는 카드를 골라 주세요.',
-    afterExtra:'더 궁금한 게 있으면 말해 주세요.',
-    unclear:'미안해요, 잘 못 들었어요. 한 번만 더 말해 줄래요?' },
-  rie:{ id:'rie', name:'리에', color:'#a77bff', tag:'관찰 리딩', desc:'작은 신호까지 꼼꼼히 찾아내는 막내의 상담',
-    pitch:1.4, rate:1.03,
-    preview:'저 리에예요. 카드, 꼼꼼하게 봐 드릴게요.',
-    greet:['아, 오셨어요? 저 리에예요. 오늘 타로는 제가 봐 드릴게요.','궁금한 거 있으면 말씀해 주세요. 저 이런 거 꼼꼼하게 잘 봐요.'],
-    again:['또 궁금한 거 생겼어요? 말씀해 주세요.'],
-    ack:q=>`「${q}」… 메모했어요. 제가 꼼꼼하게 볼게요.`,
-    ackSelf:'저희 얘기네요? …언니들한테는 비밀로 할게요. 열심히 볼게요.',
-    focus:'카드 섞을게요. 질문을 마음속으로 한 번 더 떠올려 주세요. 저도 집중할게요.',
-    pick:'이제 끌리는 카드 세 장 골라 주세요. 제가 순서대로 기억해 둘게요.',
-    pickReact:['첫 번째, 기억했어요.','두 번째도요.','세 장, 순서까지 다 외웠어요.'],
-    reveal:'그럼 순서대로 뒤집어 볼게요.',
-    react:{ good:['오, 이 카드 좋아요. 제가 보기엔 흐름이 확실히 좋아요.','좋은 카드예요. 제 관찰 노트에 별표 쳐 둘게요.'],
-            caution:['음… 이 카드는 조심하라는 신호예요. 근데 미리 알면 괜찮아요.','살짝 걸리는 카드예요. 그래도 제가 같이 체크해 드릴게요.'],
-            wait:['지금은 지켜볼 때래요. 저 지켜보는 거 잘하는데, 같이 지켜봐요.','조금 기다리면 더 잘 보일 거예요.'],
-            neutral:['무난한 카드예요. 작은 디테일이 결과를 바꿀 것 같아요.','괜찮은 흐름이에요. 어떻게 하느냐가 중요해요.'] },
-    sumIntro:'제가 세 장 흐름을 정리해 봤어요.',
-    close:{ high:'제 관찰로는, 잘될 확률 높아요. 진짜로요.', mid:'제가 계속 지켜보고 있을게요. 잘될 거예요.', low:'지금은 조금 어려워도, 작은 것부터 바꾸면 달라져요. 제가 봤어요.' },
-    followPrompt:'더 궁금한 거 있으면 물어보세요. 세 번까지 더 대답해 드릴게요. 카드를 한 장 더 뽑아 봐도 돼요.',
-    followOpen:['아, 그거 저도 궁금했어요.','메모해 둔 게 있어요.','그건요.'],
-    followLeft:n=>`${n}번 더 물어보실 수 있어요.`,
-    followEnd:'오늘은 여기까지예요. 상담 기록은 제 노트에 잘 적어 둘게요.',
-    thanks:'…헤헤, 칭찬받으니까 좋네요.',
-    extraPick:'한 장 더요? 제일 눈에 띄는 카드를 골라 주세요.',
-    afterExtra:'더 궁금한 거 있으면 물어보세요.',
-    unclear:'어… 잘 못 들었어요. 한 번만 더 말씀해 주세요.' },
+/* ═════════════ 설정 ═════════════
+   apiKey: 여기에 키를 직접 넣어 둘 수도 있어요(화면의 「AI 설정」이 더 우선).
+           단, 이 파일을 다른 사람이 열면 키가 그대로 보이니 혼자 쓸 때만 넣으세요. */
+const CONFIG = {
+  catName: '루나',
+  apiKey: '',
+  model: 'claude-opus-5-5',
 };
-const CHAR_ORDER = ['dorin','garam','seon','rie'];
+
+/* ═════════════ 데이터: 상담 고양이 ═════════════ */
+const CAT = {
+  name: CONFIG.catName, pitch: 1.5, rate: 1.05,
+  greet:[`어서 오라냥! 나는 타로 보는 고양이, ${CONFIG.catName}다냥.`,'궁금한 걸 말해 보라냥. 마이크를 누르고 말해도 되고, 글로 적어도 된다냥.'],
+  again:['또 궁금한 게 생겼냥? 편하게 말해 보라냥.'],
+  ack:q=>`「${q}」… 알겠다냥. 내가 꼼꼼히 봐 주겠다냥.`,
+  focus:'카드를 섞는 중이다냥. 눈을 감고 질문을 마음속으로 한 번 더 떠올려 보라냥.',
+  pick:'이제 마음이 끌리는 카드 세 장을 골라 보라냥. 고민하지 말고 손 가는 대로다냥.',
+  pickReact:['하나 골랐다냥.','두 장째다냥.','세 장 다 골랐다냥! 잘했다냥.'],
+  reveal:'그럼 한 장씩 뒤집어 보겠다냥.',
+  thinking:'음… 카드 기운을 읽는 중이다냥. 잠깐만 기다려 달라냥.',
+  thinkingFollow:'음… 카드를 다시 들여다보는 중이다냥.',
+  react:{ good:['아주 좋은 카드다냥! 꼬리가 절로 살랑거린다냥.','좋은 기운이 느껴진다냥!'],
+          caution:['음, 조금 조심하라는 카드다냥. 그래도 겁먹을 필요는 없다냥.','쉬운 카드는 아니다냥. 미리 알면 피할 수 있다냥.'],
+          wait:['서두르지 말라는 카드다냥. 고양이처럼 느긋하게 기다려 보라냥.','지금은 잠깐 쉬어 가도 된다냥.'],
+          neutral:['나쁘지 않다냥. 하기 나름이다냥.','무난한 흐름이다냥. 작은 행동이 결과를 바꾼다냥.'] },
+  sumIntro:'자, 세 장을 이어서 정리해 주겠다냥.',
+  close:{ high:'분명 잘될 거다냥! 좋은 소식 기다리겠다냥.', mid:`할 수 있다냥. ${CONFIG.catName}가 응원하겠다냥.`, low:'지금은 조금 힘들어도 괜찮다냥. 힘들면 언제든 다시 찾아오라냥.' },
+  followPrompt:'더 궁금한 게 있으면 물어보라냥. 세 번까지 더 대답해 주겠다냥. 카드를 한 장 더 뽑아 봐도 된다냥.',
+  followOpen:['그 질문 말이냥?','좋은 질문이다냥.','알려 주겠다냥.'],
+  followLeft:n=>`앞으로 ${n}번 더 물어볼 수 있다냥.`,
+  followEnd:'오늘 상담은 여기까지다냥. 또 놀러 오라냥!',
+  thanks:'헤헤, 고맙다냥. 쓰다듬어 줘도 된다냥.',
+  extraPick:'한 장 더 뽑겠냥? 가장 반짝여 보이는 카드를 골라 보라냥.',
+  afterExtra:'더 궁금한 게 있으면 물어보라냥.',
+  unclear:'냥? 잘 못 들었다냥. 한 번만 더 말해 달라냥.',
+};
+
+/* ═════════════ 고양이 그림 (표정: neutral smile bigsmile serious surprised) ═════════════ */
+function catSVG(expr='neutral'){
+  const eyes = {
+    neutral:`<g class="eye-blink"><ellipse cx="76" cy="102" rx="8.5" ry="10.5" fill="#2a1a3a"/><circle cx="73" cy="98" r="3.2" fill="#fff"/></g>
+             <g class="eye-blink"><ellipse cx="124" cy="102" rx="8.5" ry="10.5" fill="#2a1a3a"/><circle cx="121" cy="98" r="3.2" fill="#fff"/></g>`,
+    smile:`<path d="M67 104 Q76 93 85 104" stroke="#2a1a3a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+           <path d="M115 104 Q124 93 133 104" stroke="#2a1a3a" stroke-width="4.5" fill="none" stroke-linecap="round"/>`,
+    bigsmile:`<path d="M66 105 Q76 91 86 105" stroke="#2a1a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path d="M114 105 Q124 91 134 105" stroke="#2a1a3a" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    serious:`<ellipse cx="76" cy="104" rx="8.5" ry="7" fill="#2a1a3a"/><circle cx="73" cy="102" r="2.4" fill="#fff"/>
+             <ellipse cx="124" cy="104" rx="8.5" ry="7" fill="#2a1a3a"/><circle cx="121" cy="102" r="2.4" fill="#fff"/>
+             <path d="M65 96 L87 99 M135 96 L113 99" stroke="#c98a52" stroke-width="5" stroke-linecap="round"/>`,
+    surprised:`<circle cx="76" cy="101" r="12" fill="#2a1a3a"/><circle cx="72" cy="96" r="4.2" fill="#fff"/><circle cx="80" cy="105" r="1.8" fill="#fff"/>
+               <circle cx="124" cy="101" r="12" fill="#2a1a3a"/><circle cx="120" cy="96" r="4.2" fill="#fff"/><circle cx="128" cy="105" r="1.8" fill="#fff"/>`,
+  }[expr] || '';
+  const blush = expr==='bigsmile' ? .85 : expr==='smile' ? .6 : .35;
+  const mouthClosed = expr==='surprised'
+    ? `<ellipse cx="100" cy="127" rx="4.5" ry="5.5" fill="#b8476a"/>`
+    : `<path d="M89 122 Q94.5 129 100 122 Q105.5 129 111 122" stroke="#7a4a3a" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  return `<svg class="cat" viewBox="0 0 200 200" aria-hidden="true">
+    <path class="tail" d="M150 200 Q182 176 172 148 Q166 134 176 124" stroke="#e7ad72" stroke-width="13" fill="none" stroke-linecap="round"/>
+    <path d="M36 200 Q42 150 100 146 Q158 150 164 200Z" fill="#f2c38f"/>
+    <path d="M34 200 Q48 162 100 166 Q152 162 166 200Z" fill="#4b2a85"/>
+    <path d="M34 200 Q48 162 100 166 Q152 162 166 200" stroke="#e2c06b" stroke-width="2" fill="none"/>
+    <circle cx="100" cy="172" r="6" fill="#e2c06b"/><circle cx="100" cy="172" r="2.6" fill="#7c4dff"/>
+    <path d="M46 96 L50 40 L90 68Z" fill="#f2c38f"/><path d="M55 86 L57 53 L81 69Z" fill="#f7a8b8"/>
+    <path d="M154 96 L150 40 L110 68Z" fill="#f2c38f"/><path d="M145 86 L143 53 L119 69Z" fill="#f7a8b8"/>
+    <ellipse cx="100" cy="106" rx="63" ry="53" fill="#f2c38f"/>
+    <path d="M100 58 v13 M87 60 l3 11 M113 60 l-3 11" stroke="#d99a5e" stroke-width="5" stroke-linecap="round"/>
+    <path d="M37 104 l12 2 M37 114 l11 0 M163 104 l-12 2 M163 114 l-11 0" stroke="#d99a5e" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="100" cy="126" rx="27" ry="18" fill="#fff4e6"/>
+    <g transform="rotate(-10 100 58)">
+      <ellipse cx="100" cy="60" rx="42" ry="8" fill="#3a1f6e"/>
+      <path d="M74 60 Q84 34 104 22 Q114 12 132 8 Q118 22 120 36 Q124 50 126 60Z" fill="#4b2a85"/>
+      <path d="M76 54 Q100 48 124 54 L125 60 Q100 54 75 60Z" fill="#e2c06b"/>
+      <path class="hatstar" d="M106 34 l2.4 5 5.4.6 -4 3.8 1 5.4 -4.8-2.6 -4.8 2.6 1-5.4 -4-3.8 5.4-.6Z" fill="#f5dc9a"/>
+    </g>
+    <ellipse cx="60" cy="120" rx="10" ry="5.5" fill="#ff8fa6" opacity="${blush}"/>
+    <ellipse cx="140" cy="120" rx="10" ry="5.5" fill="#ff8fa6" opacity="${blush}"/>
+    ${eyes}
+    <path d="M95 115 L105 115 L100 121Z" fill="#e8798f"/>
+    <g class="m-closed">${mouthClosed}</g>
+    <g class="m-open"><path d="M91 123 Q100 141 109 123 Q100 127 91 123Z" fill="#b8476a"/><path d="M95 131 Q100 137 105 131" fill="#ff9fb0"/></g>
+    <path d="M70 124 L42 118 M70 130 L42 134 M130 124 L158 118 M130 130 L158 134" stroke="#8a6a5a" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
+  </svg>`;
+}
 
 /* ═════════════ 데이터: 메이저 아르카나 22장 ═════════════ */
 // e: good(좋음) caution(조심) wait(기다림) neutral(보통)
@@ -539,17 +590,16 @@ const ENERGY_SCORE = { good:2, neutral:1.2, wait:0.8, caution:0.3 };
 const ENERGY_EXPR  = { good:'smile', neutral:'neutral', wait:'neutral', caution:'serious' };
 const POS = ['과거','현재','미래'];
 const POS_INTRO = {
-  과거:'첫 번째는 과거 자리예요. 지금까지 지나온 흐름을 보여 줘요.',
-  현재:'두 번째는 현재 자리예요. 지금 상황의 핵심이에요.',
-  미래:'마지막은 미래 자리예요. 앞으로 다가올 흐름이에요.',
-  심층:'이 카드는 더 깊은 곳의 메시지를 보여 줘요.',
+  과거:'첫 번째는 과거 자리다냥. 지금까지 지나온 흐름을 보여 준다냥.',
+  현재:'두 번째는 현재 자리다냥. 지금 상황의 핵심이다냥.',
+  미래:'마지막은 미래 자리다냥. 앞으로 다가올 흐름이다냥.',
+  심층:'이 카드는 더 깊은 곳의 메시지를 보여 준다냥.',
 };
 const EXAMPLES = [
-  '이번 컴백, 잘 될까요?','콘서트 티켓팅 성공할 수 있을까요?','팬싸인회 당첨될 수 있을까요?',
+  '최애와의 콘서트 티켓, 잘 될까요?','좋아하는 아이돌의 이번 컴백이 순조로울까요?','팬싸인회 당첨될 수 있을까요?',
   '최애에게 제 응원이 닿고 있을까요?','덕질과 일상, 균형을 어떻게 맞출까요?','올해 연애운은 어떨까요?',
   '짝사랑하는 사람과 잘될 수 있을까요?','이번 시험 합격할 수 있을까요?','지금 하는 일, 계속해도 괜찮을까요?',
   '금전운이 좋아지는 시기는 언제일까요?','요즘 나에게 필요한 조언은 뭘까요?','이번 선택이 맞을까요?',
-  '넥스트비트 이번 앨범 1위 할 수 있을까요?',
 ];
 const MAX_FOLLOW = 3;
 
@@ -559,9 +609,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const pickOne = arr => arr[Math.floor(Math.random()*arr.length)];
 const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch{ return null; } }
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch{ return null; } }
 
-// 한국어 조사: j('바보','이에요/예요') → '바보예요'
+// 한국어 조사: josa('바보','이에요/예요') → '바보예요'
 function josa(word, pair){
   const [a,b] = pair.split('/');
   const ch = String(word).trim().slice(-1).charCodeAt(0);
@@ -571,9 +621,31 @@ function josa(word, pair){
   return word + (jong ? a : b);
 }
 
-function toast(msg){
+// 해요체 → 고양이 말투(~다냥). 미리 써 둔 카드 문장에만 씀
+const ADJ_HAE = /(필요|중요|충분|확실|안전|유리|강|비슷|가능|소중|분명|조용|편안|따뜻|행복|불안|답답|신중|적당|풍성|넉넉|다정|단단|순수|공정|유연|건강)해요$/;
+const NYAN_RULES = [
+  [/마세요$/, '말라냥'], [/세요$/, '라냥'], [/이에요$/, '이다냥'], [/예요$/, '다냥'],
+  [/(있|없|않|좋|같|많|싫|괜찮|작|높|낮|깊|넓|맞|늦|빠르)어요$/, '$1다냥'], [/(있|없|않|좋|같|많|괜찮|작|높|낮|깊|넓|맞|늦)아요$/, '$1다냥'],
+  [/게요$/, '게냥'], [/까요$/, '까냥'], [/돼요$/, '된다냥'], [/보여요$/, '보인다냥'], [/와요$/, '온다냥'],
+  [/줘요$/, '준다냥'], [/져요$/, '진다냥'], [/려요$/, '린다냥'], [/나요$/, '난다냥'], [/겨요$/, '긴다냥'],
+  [/커요$/, '크다냥'], [/밝아요$/, '밝다냥'], [/받아요$/, '받는다냥'], [/믿어요$/, '믿는다냥'], [/미뤄요$/, '미룬다냥'],
+  [/몰라요$/, '모른다냥'], [/봐요$/, '본다냥'], [/가요$/, '간다냥'],
+];
+function nyan(text){
+  return String(text).replace(/(\S+)요(?=[.!?,]|\s|$)/g, (m, w) => {
+    const word = w + '요';
+    if (ADJ_HAE.test(word)) return word.replace(/해요$/, '하다냥');
+    if (/해요$/.test(word)) return word.replace(/해요$/, '한다냥');
+    for (const [re, rep] of NYAN_RULES){
+      if (re.test(word)) return rep === null ? w + '냥' : word.replace(re, rep);
+    }
+    return w + '냥';
+  });
+}
+
+function toast(msg, ms=2800){
   const t=$('#toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'), 2600);
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'), ms);
 }
 
 // 문장 단위로 나누기(문장 끝 부호 + 공백 기준)
@@ -581,7 +653,7 @@ function splitSentences(text){
   const out=[]; let cur='';
   for (let i=0;i<text.length;i++){
     cur += text[i];
-    if (/[.!?]/.test(text[i]) && (i+1>=text.length || text[i+1]===' ')){ out.push(cur.trim()); cur=''; }
+    if (/[.!?]/.test(text[i]) && (i+1>=text.length || /\s/.test(text[i+1]))){ out.push(cur.trim()); cur=''; }
   }
   if (cur.trim()) out.push(cur.trim());
   return out;
@@ -609,10 +681,10 @@ const Voice = {
   },
   stop(){ if (this.supported) try{ speechSynthesis.cancel(); }catch{} },
   clean(t){
-    return t.replace(/[「」『』"“”'‘’]/g,'').replace(/…+/g,', ').replace(/\p{Extended_Pictographic}/gu,'')
+    return t.replace(/[「」『』"“”'‘’()*#_~\-]/g,' ').replace(/…+/g,', ').replace(/\p{Extended_Pictographic}/gu,'')
             .replace(/^[,\s]+/,'').replace(/\s+/g,' ').trim();
   },
-  speak(text, ch){
+  speak(text){
     return new Promise(resolve => {
       const t = this.clean(text);
       if (!this.supported || !this.on || !t){ resolve(); return; }
@@ -620,10 +692,9 @@ const Voice = {
       const fin = () => { if(done) return; done=true; clearTimeout(timer); resolve(); };
       const u = new SpeechSynthesisUtterance(t);
       u.lang='ko-KR'; if (this.voice) u.voice=this.voice;
-      u.pitch = ch.pitch; u.rate = ch.rate; u.volume = 1;
+      u.pitch = CAT.pitch; u.rate = CAT.rate; u.volume = 1;
       u.onend = fin; u.onerror = fin;
-      // 일부 브라우저에서 onend가 안 오는 경우 대비
-      const timer = setTimeout(fin, 3000 + t.length * 260 / ch.rate);
+      const timer = setTimeout(fin, 3000 + t.length * 260 / CAT.rate); // onend가 안 오는 브라우저 대비
       try { speechSynthesis.resume(); speechSynthesis.speak(u); } catch { fin(); }
     });
   },
@@ -661,9 +732,102 @@ function toggleListen(){
   try { rec.start(); setMicUI(true); } catch { setMicUI(false); }
 }
 
+/* ═════════════ AI 해석 (Claude API) ═════════════ */
+const AI = {
+  key(){ return (store('nbt_api_key') || CONFIG.apiKey || '').trim(); },
+  model(){ return store('nbt_model') || CONFIG.model; },
+  on(){ return !!this.key(); },
+  system: `너는 '${CONFIG.catName}'라는 이름의 타로 상담 고양이다. 웹페이지에서 사용자와 목소리로 대화하며 타로를 봐 준다.
+말투: 모든 문장을 귀여운 고양이 말투인 '~다냥', '~라냥', '~냥?'으로 끝낸다. 친근한 반말이다.
+네가 쓴 글은 음성 합성으로 그대로 읽힌다. 마크다운, 이모지, 괄호, 따옴표, 목록 기호, 영어를 쓰지 않는다. 문장은 짧게 쓴다.
+카드는 메이저 아르카나 22장 가운데 사용자가 직접 뽑은 카드이고 모두 정방향이다. 카드의 전통적인 의미에 근거해서, 사용자의 질문 상황에 맞게 구체적으로 해석한다.
+따뜻하고 희망적으로 말하되 근거 없는 약속은 하지 않는다. 조심할 카드는 솔직하게 말하고 어떻게 하면 좋을지 알려 준다.
+건강, 법률, 투자처럼 중요한 결정은 타로만으로 정하지 말고 전문가와 상의하라고 부드럽게 덧붙인다.
+타로와 관계없는 요청은 정중히 사양하고 타로 이야기로 돌아온다.`,
+  async call({ messages, schema, maxTokens=4000 }){
+    const key = this.key();
+    if (!key) throw new Error('API 키가 없어요');
+    const model = this.model();
+    const body = { model, max_tokens:maxTokens, system:this.system, messages, output_config:{ effort:'low' } };
+    if (schema) body.output_config.format = { type:'json_schema', schema };
+    const headers = {
+      'content-type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2026-10-21',
+      'anthropic-dangerous-direct-browser-access':'true',
+    };
+    // 안전 필터에 걸리면 서버가 다른 모델로 자동 재시도 (Haiku 5.5는 지원 안 함)
+    if (model !== 'claude-haiku-5-5'){ headers['anthropic-beta'] = 'server-side-fallback-2026-07-01'; body.fallbacks = 'default'; }
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 60000);
+    let res;
+    try {
+      res = await fetch('https://api.anthropic.com/v1/messages', { method:'POST', headers, body:JSON.stringify(body), signal:ctrl.signal });
+    } catch (e) {
+      throw new Error(e.name === 'AbortError' ? '응답이 너무 늦어요(시간 초과)' : '인터넷 연결을 확인해 주세요');
+    } finally { clearTimeout(timer); }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok){
+      const msg = data?.error?.message || '';
+      if (res.status === 401) throw new Error('API 키가 올바르지 않아요');
+      if (res.status === 403) throw new Error('이 키로는 사용할 수 없어요 (권한 확인)');
+      if (res.status === 429) throw new Error('요청이 많아요. 잠시 후 다시 해 주세요');
+      if (res.status === 529 || res.status >= 500) throw new Error('AI 서버가 바빠요. 잠시 후 다시 해 주세요');
+      if (/credit|billing|balance/i.test(msg)) throw new Error('API 크레딧(잔액)이 부족해요');
+      throw new Error(`요청 오류 (${res.status}) ${msg}`.trim());
+    }
+    if (data.stop_reason === 'refusal') throw new Error('AI가 이 질문에는 답하지 않았어요');
+    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    if (!text) throw new Error('빈 응답이 왔어요');
+    return schema ? JSON.parse(text) : text;
+  },
+  cardsText(){
+    const list = S.picks.map((c,i) => `${POS[i]}: ${c.name} (${c.key})`);
+    if (S.extra) list.push(`심층(추가로 뽑은 카드): ${S.extra.name} (${S.extra.key})`);
+    return list.join('\n');
+  },
+  reading(){
+    return this.call({
+      messages:[{ role:'user', content:
+`사용자 질문: ${S.q}
+뽑은 카드:
+${this.cardsText()}
+
+past, present, future에는 각 자리 카드의 해석을 두세 문장으로 쓴다. 카드 이름은 다시 말하지 않아도 된다.
+summary에는 세 장을 이어서 본 종합 해석을 세 문장 정도로 쓰고, 질문에 대한 직접적인 답을 넣는다.
+advice에는 오늘의 조언과 응원을 두 문장으로 쓴다.
+mood는 전체 흐름이 좋으면 high, 보통이면 mid, 어려우면 low로 한다.` }],
+      schema:{ type:'object', additionalProperties:false,
+        properties:{ past:{type:'string'}, present:{type:'string'}, future:{type:'string'}, summary:{type:'string'}, advice:{type:'string'}, mood:{type:'string', enum:['high','mid','low']} },
+        required:['past','present','future','summary','advice','mood'] },
+    });
+  },
+  extra(card){
+    return this.call({
+      messages:[{ role:'user', content:
+`사용자 질문: ${S.q}
+처음 뽑은 카드:
+${S.picks.map((c,i)=>`${POS[i]}: ${c.name} (${c.key})`).join('\n')}
+지금까지의 종합 해석: ${S.ai?.summary || ''}
+
+사용자가 더 깊은 메시지를 위해 카드 한 장을 더 뽑았다: ${card.name} (${card.key}).
+이 카드가 앞의 흐름에 무엇을 더해 주는지 세 문장 정도로 말한다. 카드 이름은 다시 말하지 않아도 된다.` }],
+      schema:{ type:'object', additionalProperties:false, properties:{ text:{type:'string'} }, required:['text'] },
+    }).then(r => r.text);
+  },
+  follow(question){
+    const first = `사용자 질문: ${S.q}\n뽑은 카드:\n${this.cardsText()}\n위 카드로 타로를 봐 줘.`;
+    const reading = S.ai ? `${S.ai.summary} ${S.ai.advice}` : S.readingText;
+    const messages = [{ role:'user', content:first }, { role:'assistant', content:reading }];
+    for (const m of S.chat) messages.push(m);
+    messages.push({ role:'user', content:`${question}\n\n(뽑은 카드와 앞의 해석을 바탕으로 두세 문장, 많아야 네 문장으로 대답한다.)` });
+    return this.call({ messages, maxTokens:3000 });
+  },
+};
+
 /* ═════════════ 상태 ═════════════ */
-const S = { ch:null, q:'', topic:'gen', deck:[], picks:[], extra:null, follow:0, pickNeed:0, pickPool:null };
-let CH = null;          // 현재 상담 멤버
+const S = { q:'', topic:'gen', deck:[], picks:[], extra:null, follow:0, pickNeed:0, pickPool:null,
+            ai:null, aiExtra:'', chat:[], readingText:'' };
 let TOKEN = 0;          // 흐름이 바뀌면 이전 흐름은 멈춤
 class Abort {}
 const live = tok => { if (tok !== TOKEN) throw new Abort(); };
@@ -678,26 +842,31 @@ function newFlow(){
   return TOKEN;
 }
 
-/* ═════════════ 캐릭터 연출 ═════════════ */
-function setExpr(expr){ if (CH) $('#avatar').src = `assets/${CH.id}_${expr}.jpg`; }
-function setSpeaking(on){ $('#stage').classList.toggle('speaking', on); }
-
+/* ═════════════ 고양이 연출 ═════════════ */
+let curExpr = 'neutral', mouthTimer = null;
+function setExpr(expr){ curExpr = expr; $('#avatar').innerHTML = catSVG(expr); }
+function setSpeaking(on){
+  $('#stage').classList.toggle('speaking', on);
+  clearInterval(mouthTimer);
+  const av = $('#avatar');
+  if (on){
+    mouthTimer = setInterval(() => av.classList.toggle('mo', Math.random() < .6), 130);
+  } else av.classList.remove('mo');
+}
 function skipSay(){ if (sayCtl) sayCtl.skip(); }
 
-// 멤버가 말하기: 자막(타이핑) + 목소리. 끝나면 resolve
+// 고양이가 말하기: 자막(타이핑) + 목소리. 끝나면 resolve
 function say(text, expr, {log=true}={}){
   skipSay();
   if (expr) setExpr(expr);
-  if (log) addLog('char', text);
+  if (log) addLog('cat', text);
   const lineEl = $('#line');
   lineEl.textContent = '';
   $('#dialog').classList.remove('waiting');
   return new Promise(resolve => {
     const sentences = splitSentences(text);
     let shown = '', idx = 0, typer = null, ended = false;
-    const ctl = {
-      skip(){ if (ended) return; ended = true; Voice.stop(); finish(); },
-    };
+    const ctl = { skip(){ if (ended) return; ended = true; Voice.stop(); finish(); } };
     function finish(){
       ended = true; clearInterval(typer);
       lineEl.textContent = text;
@@ -713,7 +882,7 @@ function say(text, expr, {log=true}={}){
         let k = 0; clearInterval(typer);
         const speed = Voice.on ? 70 : 38;
         typer = setInterval(() => { k++; lineEl.textContent = base + s.slice(0,k); if (k >= s.length) clearInterval(typer); }, speed);
-        if (Voice.on && Voice.supported) await Voice.speak(s, CH);
+        if (Voice.on && Voice.supported) await Voice.speak(s);
         else await sleep(s.length * speed + 350);
         if (ended) return;
         clearInterval(typer);
@@ -736,6 +905,18 @@ function onDialogTap(){
   if (sayCtl) { sayCtl.skip(); return; }
   if (waitResolve) waitResolve();
 }
+// AI 응답을 기다리는 동안 고양이가 한마디 하고, 둘 다 끝나면 결과 반환
+async function withThinking(promise, line, tok){
+  let settled = false;
+  promise.then(() => settled = true, () => settled = true);
+  await Promise.race([promise.catch(()=>{}), sleep(350)]);
+  live(tok);
+  if (!settled){
+    $('#nextRow').classList.add('hidden');
+    await say(line, 'neutral', {log:false}); live(tok);
+  }
+  try { return await promise; } finally { live(tok); }
+}
 
 /* ═════════════ 대화 기록 ═════════════ */
 function addLog(who, text){
@@ -743,10 +924,10 @@ function addLog(who, text){
   el.className = 'msg' + (who==='me' ? ' me' : '');
   if (who==='me') el.innerHTML = `<p>${esc(text)}</p>`;
   else {
-    el.innerHTML = `<img src="assets/${CH.id}_neutral.jpg" alt=""><p>${esc(text)}</p>`
+    el.innerHTML = `<div class="mini catbox">${catSVG('smile')}</div><p>${esc(text)}</p>`
       + (Voice.supported ? `<button class="play" aria-label="다시 듣기">▶</button>` : '');
     const b = el.querySelector('.play');
-    if (b) b.onclick = () => { skipSay(); Voice.stop(); Voice.speak(text, CH); };
+    if (b) b.onclick = () => { skipSay(); Voice.stop(); Voice.speak(text); };
   }
   $('#log').appendChild(el);
   if (!$('#logWrap').classList.contains('hidden') && who==='me') el.scrollIntoView({behavior:'smooth', block:'end'});
@@ -771,11 +952,11 @@ function submitInput(){
   inputHandler(v);
 }
 
-/* ═════════════ 질문 분석 ═════════════ */
+/* ═════════════ 질문 분석 (기본 해석용) ═════════════ */
 function detectQ(text){
   const t = text || '';
   let topic = 'gen';
-  if (/최애|아이돌|멤버|컴백|콘서트|티켓|팬싸|팬미|사인회|덕질|스밍|투표|차트|앨범|음원|굿즈|공연|넥스트비트|도린|가람|세온|리에|1위|무대|팬/.test(t)) topic='fan';
+  if (/최애|아이돌|멤버|컴백|콘서트|티켓|팬싸|팬미|사인회|덕질|스밍|투표|차트|앨범|음원|굿즈|공연|1위|무대|팬/.test(t)) topic='fan';
   else if (/연애|사랑|썸|짝사랑|애인|남친|여친|남자\s*친구|여자\s*친구|고백|재회|이별|헤어|연락|좋아하는\s*사람|결혼|인연|그\s*사람/.test(t)) topic='love';
   else if (/취업|이직|직장|회사|시험|합격|공부|학교|성적|면접|오디션|진로|프로젝트|승진|알바|사업|입시|자격증/.test(t)) topic='work';
   else if (/돈|금전|재물|월급|수입|투자|주식|코인|용돈|저축|대출|재테크/.test(t)) topic='money';
@@ -784,7 +965,6 @@ function detectQ(text){
     timing: /언제|시기|몇\s*월|얼마나\s*(걸|기다)/.test(t),
     yesno: /(될까|할까|있을까|맞을까|괜찮을까|가능할까|좋을까|붙을까|닿을까|통할까|성공할|합격할|당첨될|잘\s*될|되나요|할\s*수\s*있)/.test(t),
     advice: /어떻게|어떡|뭘|무엇을|뭐를|방법|조언|해야|필요한/.test(t),
-    self: /넥스트비트|도린|가람|세온|리에|너희|당신들/.test(t),
   };
 }
 function levelOf(cards){
@@ -793,33 +973,41 @@ function levelOf(cards){
 }
 const LV_EXPR = { high:'bigsmile', mid:'smile', low:'serious' };
 const YES = {
-  high:'질문에 대한 답은, 좋은 쪽으로 크게 기울어 있어요. 가능성이 높아요.',
-  mid:'가능성은 충분해요. 다만 저절로 되기보다는, 조금 더 준비하고 움직일수록 결과가 좋아지는 흐름이에요.',
-  low:'솔직히 지금 흐름 그대로라면 쉽지는 않아요. 그래도 카드는 방법을 바꾸면 달라질 수 있다고 말해요.',
+  high:'질문에 대한 답은, 좋은 쪽으로 크게 기울어 있다냥. 가능성이 높다냥.',
+  mid:'가능성은 충분하다냥. 다만 저절로 되기보다는, 조금 더 준비하고 움직일수록 결과가 좋아지는 흐름이다냥.',
+  low:'솔직히 지금 흐름 그대로라면 쉽지는 않다냥. 그래도 카드는 방법을 바꾸면 달라질 수 있다고 말한다냥.',
 };
 const GEN = {
-  high:'전체적으로 아주 밝은 흐름이에요. 지금 마음먹은 방향이 맞아요.',
-  mid:'좋은 점과 신경 쓸 점이 섞여 있지만, 결국은 충분히 좋아질 수 있는 흐름이에요.',
-  low:'지금은 조금 힘든 구간이에요. 그래도 이 시기를 잘 지나면 분명 달라져요.',
+  high:'전체적으로 아주 밝은 흐름이다냥. 지금 마음먹은 방향이 맞다냥.',
+  mid:'좋은 점과 신경 쓸 점이 섞여 있지만, 결국은 충분히 좋아질 수 있는 흐름이다냥.',
+  low:'지금은 조금 힘든 구간이다냥. 그래도 이 시기를 잘 지나면 분명 달라진다냥.',
 };
-const meaningOf = (card, topic) => card[topic] || card.gen;
+const meaningOf = (card, topic) => nyan(card[topic] || card.gen);
+const advOf = card => nyan(card.adv);
+const whenOf = card => nyan(josa(card.when,'이에요/예요'));
 
-function cardLine(card, pos){
-  return `${POS_INTRO[pos]} 나온 카드는 ${card.name}, ${card.key}의 카드예요. ${meaningOf(card, S.topic)} ${pickOne(CH.react[card.e])}`;
+function cardHead(card, pos){ return `${POS_INTRO[pos]} 나온 카드는 ${card.name}, ${card.key}의 카드다냥.`; }
+function cardLine(card, pos, aiText){
+  if (aiText) return `${cardHead(card,pos)} ${aiText}`;
+  return `${cardHead(card,pos)} ${meaningOf(card, S.topic)} ${pickOne(CAT.react[card.e])}`;
 }
 function summaryLines(){
   const [p,c,f] = S.picks;
+  if (S.ai){
+    const lv = ['high','mid','low'].includes(S.ai.mood) ? S.ai.mood : levelOf(S.picks);
+    return { a:`${CAT.sumIntro} ${S.ai.summary}`, b:S.ai.advice, lv, text:`${S.ai.summary} ${S.ai.advice}` };
+  }
   const it = detectQ(S.q);
   const lv = levelOf(S.picks);
   let ans;
-  if (it.timing) ans = `궁금해한 시기는 미래 카드 ${josa(f.name,'이/가')} 알려 줘요. ${josa(f.when,'이에요/예요')}. ${GEN[lv]}`;
+  if (it.timing) ans = `궁금해한 시기는 미래 카드 ${josa(f.name,'이/가')} 알려 준다냥. ${whenOf(f)}. ${GEN[lv]}`;
   else if (it.yesno) ans = YES[lv];
   else ans = GEN[lv];
-  const a = `${CH.sumIntro} ${p.name}에서 시작해서, 지금은 ${c.name}, 그리고 앞으로는 ${josa(f.name,'으로/로')} 이어지는 흐름이에요. ${ans}`;
-  let b = `카드가 주는 조언은 이거예요. ${f.adv}`;
-  if (c.e === 'caution') b += ` 그리고 지금은, ${c.adv}`;
-  b += ` ${CH.close[lv]}`;
-  return { a, b, lv, text: `${ans} ${f.adv}` };
+  const a = `${CAT.sumIntro} ${p.name}에서 시작해서, 지금은 ${c.name}, 그리고 앞으로는 ${josa(f.name,'으로/로')} 이어지는 흐름이다냥. ${ans}`;
+  let b = `카드가 주는 조언은 이거다냥. ${advOf(f)}`;
+  if (c.e === 'caution') b += ` 그리고 지금은, ${advOf(c)}`;
+  b += ` ${CAT.close[lv]}`;
+  return { a, b, lv, text: `${ans} ${advOf(f)}` };
 }
 function followAnswer(t){
   const it = detectQ(t);
@@ -829,16 +1017,16 @@ function followAnswer(t){
   const named = all.find(x => t.includes(x.name))
     || (/과거/.test(t) && p) || (/현재/.test(t) && c) || (/미래|앞으로/.test(t) && f)
     || (/추가|심층|마지막\s*카드/.test(t) && S.extra) || null;
-  const open = pickOne(CH.followOpen);
-  if (named) return { expr:ENERGY_EXPR[named.e], text:`${open} ${named.name} 카드 말이죠. ${meaningOf(named, topic)} 조언하자면, ${named.adv}` };
+  const open = pickOne(CAT.followOpen);
+  if (named) return { expr:ENERGY_EXPR[named.e], text:`${open} ${named.name} 카드 말이다냥. ${meaningOf(named, topic)} 조언하자면, ${advOf(named)}` };
   if (it.timing){
     const k = S.extra || f;
-    return { expr:'neutral', text:`${open} 시기로 보면 ${k.name} 카드가 힌트예요. ${josa(k.when,'이에요/예요')}. 너무 조급해하지 않아도 돼요.` };
+    return { expr:'neutral', text:`${open} 시기로 보면 ${k.name} 카드가 힌트다냥. ${whenOf(k)}. 너무 조급해하지 않아도 된다냥.` };
   }
-  if (it.advice) return { expr:'smile', text:`${open} 지금 카드 ${josa(c.name,'은/는')} 이렇게 말해요. ${c.adv} 그리고 앞으로를 위해서는, ${f.adv}` };
+  if (it.advice) return { expr:'smile', text:`${open} 지금 카드 ${josa(c.name,'은/는')} 이렇게 말한다냥. ${advOf(c)} 그리고 앞으로를 위해서는, ${advOf(f)}` };
   if (it.yesno){ const lv = levelOf(all); return { expr:LV_EXPR[lv], text:`${open} ${YES[lv]}` }; }
-  if (topic !== S.topic) return { expr:ENERGY_EXPR[c.e], text:`${open} 그 부분은 현재 카드 ${josa(c.name,'으로/로')} 볼 수 있어요. ${meaningOf(c, topic)} ${c.adv}` };
-  return { expr:'neutral', text:`${open} 카드 흐름을 다시 보면, 지금은 ${c.name}의 ${c.key}, 앞으로는 ${f.name}의 ${josa(f.key,'이/가')} 핵심이에요. ${f.adv}` };
+  if (topic !== S.topic) return { expr:ENERGY_EXPR[c.e], text:`${open} 그 부분은 현재 카드 ${josa(c.name,'으로/로')} 볼 수 있다냥. ${meaningOf(c, topic)} ${advOf(c)}` };
+  return { expr:'neutral', text:`${open} 카드 흐름을 다시 보면, 지금은 ${c.name}의 ${c.key}, 앞으로는 ${f.name}의 ${josa(f.key,'이/가')} 핵심이다냥. ${advOf(f)}` };
 }
 
 /* ═════════════ 화면 그리기 ═════════════ */
@@ -854,7 +1042,6 @@ function setPhase(ph){
   $('#logWrap').classList.toggle('hidden', ph !== 'result');
   $('#panel').innerHTML = '';
 }
-let exPage = 0;
 function renderAsk(){
   const list = shuffle(EXAMPLES).slice(0,3);
   $('#panel').innerHTML = `
@@ -880,24 +1067,25 @@ function renderReading(){
     <div class="slot" id="slot${i}"><div class="pos">${POS[i]}</div>${cardHTML(c)}<div class="cap"></div></div>`).join('')}</div>`;
 }
 function renderResult(){
-  const items = S.picks.map((c,i)=>({c,pos:POS[i]}));
-  if (S.extra) items.push({c:S.extra,pos:'심층'});
+  const items = S.picks.map((c,i)=>({c,pos:POS[i],txt:S.ai ? S.ai[['past','present','future'][i]] : meaningOf(c,S.topic)}));
+  if (S.extra) items.push({c:S.extra,pos:'심층',txt:S.aiExtra || meaningOf(S.extra,S.topic)});
   const sum = summaryLines();
+  S.readingText = sum.text;
   $('#panel').innerHTML = `
     <div class="result-q"><b>질문</b>${esc(S.q)}</div>
-    <div class="rcards">${items.map(({c,pos})=>`
+    <div class="rcards">${items.map(({c,pos,txt})=>`
       <div class="rcard">${cardHTML(c,true)}
         <div><div class="t">${pos}</div><div class="n">${c.name}<small>${c.key}</small></div>
-        <div class="m">${esc(meaningOf(c,S.topic))}</div></div></div>`).join('')}</div>
-    <div class="summary"><h3>✦ ${CH.name}의 종합 해석</h3><p>${esc(sum.text)}</p></div>
+        <div class="m">${esc(txt)}</div></div></div>`).join('')}</div>
+    <div class="summary"><h3>✦ ${esc(CAT.name)}의 종합 해석<small>${S.ai ? 'AI 해석' : '기본 해석'}</small></h3><p>${esc(sum.text)}</p></div>
     <div class="actions">
       ${S.extra ? '' : `<button class="btn wide" id="aExtra">🃏 카드 한 장 더 뽑기</button>`}
       <button class="btn ghost" id="aNew">새 질문하기</button>
-      <button class="btn ghost" id="aChar">다른 멤버에게</button>
+      <button class="btn ghost" id="aHome">처음으로</button>
     </div>`;
   if ($('#aExtra')) $('#aExtra').onclick = () => run(flowExtra);
   $('#aNew').onclick = () => run(() => phaseAsk(false));
-  $('#aChar').onclick = goSelect;
+  $('#aHome').onclick = goHome;
 }
 
 /* ═════════════ 카드 고르기 ═════════════ */
@@ -909,7 +1097,7 @@ function onPick(card, el){
   el.classList.add('picked');
   el.insertAdjacentHTML('beforeend', `<span class="badge">${picked.length}</span>`);
   $('#pickCount').textContent = $('#pickCount').textContent.replace(/\d+ \/ /, `${picked.length} / `);
-  if (S.pickNeed === 3) say(CH.pickReact[picked.length-1], picked.length===3 ? 'bigsmile' : 'smile', {log:false});
+  if (S.pickNeed === 3) say(CAT.pickReact[picked.length-1], picked.length===3 ? 'bigsmile' : 'smile', {log:false});
   if (picked.length >= S.pickNeed){
     $('#pickGrid').classList.add('done');
     const r = pickResolve; pickResolve = null; r(picked);
@@ -921,19 +1109,16 @@ function waitPicks(need){
 }
 
 /* ═════════════ 상담 흐름 ═════════════ */
-function goSelect(){
+function goHome(){
   newFlow(); setInput(null);
-  CH = null;
   $('#room').classList.add('hidden'); $('#select').classList.remove('hidden');
   $('#homeBtn').classList.add('hidden');
+  renderAiState();
   window.scrollTo(0,0);
 }
-function enterRoom(id){
+function enterRoom(){
   Voice.unlock();
-  CH = CHARS[id];
-  document.documentElement.style.setProperty('--char', CH.color);
-  ['neutral','smile','bigsmile','serious','surprised','upset'].forEach(e => { new Image().src = `assets/${CH.id}_${e}.jpg`; });
-  $('#who').textContent = CH.name;
+  $('#who').textContent = CAT.name;
   $('#select').classList.add('hidden'); $('#room').classList.remove('hidden');
   $('#homeBtn').classList.remove('hidden');
   clearLog();
@@ -945,11 +1130,11 @@ async function phaseAsk(first){
   setPhase('ask'); renderAsk();
   setInput(handleQuestion, '궁금한 걸 말하거나 적어 주세요');
   window.scrollTo(0,0);
-  for (const l of (first ? CH.greet : CH.again)){ await say(l, 'smile'); live(tok); }
+  for (const l of (first ? CAT.greet : CAT.again)){ await say(l, 'smile'); live(tok); }
 }
 function handleQuestion(text){
   const q = text.trim().slice(0,150);
-  if (q.replace(/\s/g,'').length < 2){ run(async()=>{ await say(CH.unclear,'surprised',{log:false}); }); return; }
+  if (q.replace(/\s/g,'').length < 2){ run(async()=>{ await say(CAT.unclear,'surprised',{log:false}); }); return; }
   S.q = q;
   run(flowReading);
 }
@@ -958,20 +1143,26 @@ async function flowReading(){
   setInput(null);
   clearLog(); addLog('me', S.q);
   const it = detectQ(S.q);
-  S.topic = it.topic; S.picks = []; S.extra = null; S.follow = 0;
+  Object.assign(S, { topic:it.topic, picks:[], extra:null, follow:0, ai:null, aiExtra:'', chat:[] });
   setPhase('focus'); renderFocus(); window.scrollTo(0,0);
   const snip = S.q.length > 30 ? S.q.slice(0,30) + '…' : S.q;
-  await say(it.self ? CH.ackSelf : CH.ack(snip), it.self ? 'bigsmile' : 'neutral'); live(tok);
-  await Promise.all([say(CH.focus, 'neutral'), sleep(2200)]); live(tok);
+  await say(CAT.ack(snip), 'neutral'); live(tok);
+  await Promise.all([say(CAT.focus, 'neutral'), sleep(2200)]); live(tok);
 
   setPhase('pick'); S.deck = shuffle(DECK);
   renderPickGrid(S.deck, 3, '마음이 끌리는 카드 3장을 골라 주세요', '고른 순서대로 과거 · 현재 · 미래');
-  say(CH.pick, 'smile');
+  say(CAT.pick, 'smile');
   S.picks = await waitPicks(3); live(tok);
+  const aiReq = AI.on() ? AI.reading() : null;   // 카드를 뒤집는 동안 미리 요청
+  if (aiReq) aiReq.catch(() => {});
   await sleep(700); live(tok);
 
   setPhase('reading'); renderReading(); window.scrollTo(0,0);
-  await say(CH.reveal, 'neutral'); live(tok);
+  await say(CAT.reveal, 'neutral'); live(tok);
+  if (aiReq){
+    try { S.ai = await withThinking(aiReq, CAT.thinking, tok); }
+    catch (e){ if (e instanceof Abort) throw e; S.ai = null; toast(`AI 해석을 못 받았어요: ${e.message}. 기본 해석으로 진행해요.`, 4200); }
+  }
   for (let i=0;i<3;i++){
     const slot = $('#slot'+i), card = S.picks[i];
     document.querySelectorAll('.slot').forEach(s=>s.classList.remove('active'));
@@ -980,7 +1171,8 @@ async function flowReading(){
     setExpr('surprised');
     await sleep(750); live(tok);
     slot.querySelector('.cap').textContent = card.key;
-    await say(cardLine(card, POS[i]), ENERGY_EXPR[card.e]); live(tok);
+    const aiText = S.ai ? S.ai[['past','present','future'][i]] : '';
+    await say(cardLine(card, POS[i], aiText), ENERGY_EXPR[card.e]); live(tok);
     await waitNext(); live(tok);
   }
   document.querySelectorAll('.slot').forEach(s=>s.classList.remove('active'));
@@ -989,7 +1181,7 @@ async function flowReading(){
   await waitNext(); live(tok);
   await say(sum.b, sum.lv==='low' ? 'smile' : 'bigsmile'); live(tok);
   await waitNext(); live(tok);
-  showResult(tok, CH.followPrompt);
+  showResult(tok, CAT.followPrompt);
 }
 function showResult(tok, line){
   setPhase('result'); renderResult(); window.scrollTo(0,0);
@@ -1004,7 +1196,7 @@ function updateFollowInput(){
 function handleFollow(text){
   addLog('me', text);
   if (/고마워|고맙|감사|땡큐|thank/i.test(text) && text.length < 20){
-    run(async()=>{ const tok=newFlow(); await say(CH.thanks,'bigsmile'); live(tok); });
+    run(async()=>{ const tok=newFlow(); await say(CAT.thanks,'bigsmile'); live(tok); });
     return;
   }
   if (/한\s*장\s*더|카드.*더\s*뽑|더\s*뽑/.test(text) && !S.extra){ run(flowExtra); return; }
@@ -1013,11 +1205,19 @@ function handleFollow(text){
   updateFollowInput();
   run(async () => {
     const tok = newFlow();
-    const ans = followAnswer(text);
+    let ans = null;
+    if (AI.on()){
+      try {
+        const txt = await withThinking(AI.follow(text), CAT.thinkingFollow, tok);
+        ans = { text:txt, expr:'smile' };
+        S.chat.push({ role:'user', content:text }, { role:'assistant', content:txt });
+      } catch (e){ if (e instanceof Abort) throw e; toast(`AI 답변을 못 받았어요: ${e.message}`, 3600); }
+    }
+    if (!ans) ans = followAnswer(text);
     await say(ans.text, ans.expr); live(tok);
     const left = MAX_FOLLOW - S.follow;
-    if (left > 0) await say(CH.followLeft(left), 'smile', {log:false});
-    else await say(CH.followEnd, 'bigsmile');
+    if (left > 0) await say(CAT.followLeft(left), 'smile', {log:false});
+    else await say(CAT.followEnd, 'bigsmile');
     live(tok);
   });
 }
@@ -1029,8 +1229,10 @@ async function flowExtra(){
   const pool = shuffle(DECK.filter(c=>!used.has(c.id)));
   renderPickGrid(pool, 1, '더 깊은 메시지를 위한 카드 1장', '가장 끌리는 카드를 골라 주세요');
   window.scrollTo(0,0);
-  say(CH.extraPick, 'smile');
+  say(CAT.extraPick, 'smile');
   const [card] = await waitPicks(1); live(tok);
+  const aiReq = AI.on() ? AI.extra(card) : null;
+  if (aiReq) aiReq.catch(() => {});
   await sleep(500); live(tok);
   $('#panel').innerHTML = `<div class="spread" style="grid-template-columns:1fr;max-width:150px;margin:6px auto 0">
     <div class="slot active" id="slotX"><div class="pos">심층</div>${cardHTML(card)}<div class="cap"></div></div></div>`;
@@ -1038,38 +1240,58 @@ async function flowExtra(){
   $('#slotX .tcard').classList.add('flipped'); setExpr('surprised');
   await sleep(750); live(tok);
   $('#slotX .cap').textContent = card.key;
-  S.extra = card;
-  await say(cardLine(card, '심층'), ENERGY_EXPR[card.e]); live(tok);
+  S.extra = card; S.aiExtra = '';
+  if (aiReq){
+    try { S.aiExtra = await withThinking(aiReq, CAT.thinking, tok); }
+    catch (e){ if (e instanceof Abort) throw e; toast(`AI 해석을 못 받았어요: ${e.message}`, 3600); }
+  }
+  await say(cardLine(card, '심층', S.aiExtra), ENERGY_EXPR[card.e]); live(tok);
   await waitNext(); live(tok);
-  showResult(tok, CH.afterExtra);
+  showResult(tok, CAT.afterExtra);
 }
 
-/* ═════════════ 시작 화면 ═════════════ */
-function renderSelect(){
-  $('#charGrid').innerHTML = CHAR_ORDER.map(id => { const c=CHARS[id]; return `
-    <div class="char-card" style="--c:${c.color}" data-id="${id}" role="button" tabindex="0" aria-label="${c.name}에게 상담받기">
-      <img src="assets/${id}_portrait.jpg" alt="${c.name}">
-      <button class="pv" data-pv="${id}" aria-label="${c.name} 목소리 미리 듣기">🔊</button>
-      <div class="info"><div class="nm">${c.name}<span class="tg">${c.tag}</span></div><div class="ds">${c.desc}</div></div>
-    </div>`; }).join('');
-  $('#charGrid').querySelectorAll('.char-card').forEach(el => {
-    el.onclick = e => {
-      if (e.target.closest('[data-pv]')){
-        e.stopPropagation();
-        if (!Voice.supported) { toast('이 브라우저는 음성 재생을 지원하지 않아요.'); return; }
-        if (!Voice.on) { toast('위의 🔇 버튼을 눌러 목소리를 켜 주세요.'); return; }
-        Voice.stop(); Voice.speak(CHARS[el.dataset.id].preview, CHARS[el.dataset.id]);
-        return;
-      }
-      enterRoom(el.dataset.id);
-    };
-    el.onkeydown = e => { if (e.key==='Enter') enterRoom(el.dataset.id); };
-  });
+/* ═════════════ AI 설정 창 ═════════════ */
+function renderAiState(){
+  const on = AI.on();
+  $('#aiDot').classList.toggle('on', on);
+  const name = $('#modelIn').querySelector(`option[value="${AI.model()}"]`)?.textContent.split(' · ')[0] || AI.model();
+  $('#aiState').innerHTML = on
+    ? `<b>AI 해석 켜짐</b> · ${esc(name)} · <button id="aiOpen2">설정</button>`
+    : `지금은 <b>기본 해석</b>으로 진행돼요. API 키를 넣으면 AI가 질문에 맞춰 해석해요. <button id="aiOpen2">API 키 넣기</button>`;
+  $('#aiOpen2').onclick = openSettings;
 }
+function openSettings(){
+  $('#keyIn').value = store('nbt_api_key') || '';
+  $('#keyIn').placeholder = CONFIG.apiKey && !store('nbt_api_key') ? '파일 안에 키가 설정되어 있어요' : 'sk-ant-로 시작하는 키';
+  $('#modelIn').value = AI.model();
+  $('#testOut').classList.add('hidden');
+  $('#setModal').classList.remove('hidden');
+}
+function closeSettings(){ $('#setModal').classList.add('hidden'); renderAiState(); }
+function saveSettings(){
+  const k = $('#keyIn').value.trim();
+  if (k && !/^sk-ant-/.test(k)) toast('키가 보통 sk-ant- 로 시작해요. 한 번 확인해 주세요.');
+  store('nbt_api_key', k || null);
+  store('nbt_model', $('#modelIn').value);
+}
+async function testSettings(){
+  saveSettings();
+  const out = $('#testOut');
+  out.className = 'test-out'; out.textContent = '연결하는 중…';
+  if (!AI.on()){ out.className = 'test-out err'; out.textContent = 'API 키를 먼저 넣어 주세요.'; return; }
+  try {
+    const txt = await AI.call({ messages:[{ role:'user', content:'연결 테스트야. 한 문장으로 짧게 인사해 줘.' }], maxTokens:2000 });
+    out.className = 'test-out ok'; out.textContent = `✓ 연결됐어요! 고양이의 대답: ${txt}`;
+  } catch (e){ out.className = 'test-out err'; out.textContent = `연결 실패: ${e.message}`; }
+  renderAiState();
+}
+
+/* ═════════════ 시작 ═════════════ */
 function renderVoiceBtn(){
   const b = $('#voiceBtn');
   b.setAttribute('aria-pressed', Voice.on ? 'true' : 'false');
-  b.textContent = Voice.on ? '🔊 목소리' : '🔇 자막만';
+  b.textContent = Voice.on ? '🔊' : '🔇';
+  b.title = Voice.on ? '목소리 끄기 (자막만)' : '목소리 켜기';
 }
 function initStars(){
   const box = $('#stars'); let h='';
@@ -1077,11 +1299,14 @@ function initStars(){
   box.innerHTML = h;
 }
 
-/* ═════════════ 연결 ═════════════ */
 Voice.init();
 initStars();
-renderSelect();
+$('#heroCat').innerHTML = catSVG('smile');
+$('#heroName').textContent = CAT.name;
+setExpr('smile');
 renderVoiceBtn();
+renderAiState();
+$('#startBtn').onclick = enterRoom;
 $('#voiceBtn').onclick = () => {
   if (!Voice.supported){ toast('이 브라우저는 음성 재생을 지원하지 않아 자막으로 진행해요.'); return; }
   Voice.on = !Voice.on; store('nbt_voice', Voice.on ? '1' : '0');
@@ -1089,7 +1314,14 @@ $('#voiceBtn').onclick = () => {
   renderVoiceBtn();
   toast(Voice.on ? '목소리를 켰어요' : '자막으로만 진행해요');
 };
-$('#homeBtn').onclick = goSelect;
+$('#setBtn').onclick = openSettings;
+$('#setClose').onclick = closeSettings;
+$('#setModal').onclick = e => { if (e.target.id === 'setModal') closeSettings(); };
+$('#keyShow').onclick = () => { const i=$('#keyIn'); const show = i.type==='password'; i.type = show ? 'text' : 'password'; $('#keyShow').textContent = show ? '숨기기' : '보기'; };
+$('#keySave').onclick = () => { saveSettings(); toast(AI.on() ? 'AI 해석을 켰어요' : '키가 없어서 기본 해석으로 진행해요'); closeSettings(); };
+$('#keyTest').onclick = testSettings;
+$('#keyDel').onclick = () => { store('nbt_api_key', null); $('#keyIn').value=''; toast('이 브라우저에서 키를 지웠어요'); renderAiState(); $('#testOut').classList.add('hidden'); };
+$('#homeBtn').onclick = goHome;
 $('#dialog').onclick = onDialogTap;
 $('#dialog').onkeydown = e => { if (e.key==='Enter' || e.key===' ') { e.preventDefault(); onDialogTap(); } };
 $('#nextBtn').onclick = () => { if (waitResolve) waitResolve(); };
